@@ -1,0 +1,20 @@
+import 'package:ecommerce_app/core/constants/api_const.dart';
+import 'package:ecommerce_app/core/services/api_service.dart';
+import 'package:ecommerce_app/src/home/data/datasources/home_remote_data_src.dart';
+import 'package:ecommerce_app/src/home/data/repos/home_repo_impl.dart';
+import 'package:ecommerce_app/src/home/domain/repos/home_repo.dart';
+import 'package:ecommerce_app/src/home/domain/usecases/get_banners.dart';
+import 'package:ecommerce_app/src/home/domain/usecases/get_categories.dart';
+import 'package:ecommerce_app/src/home/domain/usecases/get_products.dart';
+import 'package:ecommerce_app/src/home/presentation/provider/home_provider.dart';
+import 'package:ecommerce_app/src/profile/features/theme/data/datasource/theme_local_data_src.dart';
+import 'package:ecommerce_app/src/profile/features/theme/data/repo/theme_repo_impl.dart';
+import 'package:ecommerce_app/src/profile/features/theme/domain/repo/theme_repo.dart';
+import 'package:ecommerce_app/src/profile/features/theme/domain/usecases/cache_theme_mode.dart';
+import 'package:ecommerce_app/src/profile/features/theme/domain/usecases/load_theme_mode.dart';
+import 'package:ecommerce_app/src/profile/features/theme/presentation/provider/theme_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+part 'dependency_injection_main.dart';

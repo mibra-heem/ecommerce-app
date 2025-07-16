@@ -1,29 +1,48 @@
-import 'package:ecommerce_app/controller/product_controller.dart';
-import 'package:ecommerce_app/global.dart';
-import 'package:ecommerce_app/route/app_pages.dart';
-import 'package:ecommerce_app/route/app_routes.dart';
+import 'package:ecommerce_app/core/resources/themes.dart';
+import 'package:ecommerce_app/core/services/dependency_injection.dart';
+import 'package:ecommerce_app/core/services/go_router.dart';
+import 'package:ecommerce_app/core/utils/dimensions.dart';
+import 'package:ecommerce_app/src/home/presentation/provider/home_provider.dart';
+import 'package:ecommerce_app/src/profile/features/theme/presentation/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart'; 
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
-  await Global.init();
-  runApp(MyApp());
+  await init();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: Size(392.72, 856.72),
-      builder: (context, child) => GetMaterialApp(
-        // themeMode: ThemeMode.system,
-        debugShowCheckedModeBanner: false,
-        initialRoute: AppRoutes.splashScreen,
-        getPages: AppPages.routes,
-      ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => sl<HomeProvider>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => sl<ThemeProvider>(),
+        ),
+      ],
+      child: const MainApp(),
+    );
+  }
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Dimensions.init(context);
+    return MaterialApp.router(
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
+      themeMode: Provider.of<ThemeProvider>(context).themeMode,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
     );
   }
 }
