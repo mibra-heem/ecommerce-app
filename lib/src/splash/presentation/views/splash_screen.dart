@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'package:ecommerce_app/core/constants/route_const.dart';
-import 'package:ecommerce_app/core/resources/colors.dart';
+import 'package:ecommerce_app/core/config/route.dart';
+import 'package:ecommerce_app/core/app/resources/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconly/iconly.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -35,20 +36,17 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: ScaleTransition(
         scale: animation,
-        child: const Center(
+        child:  const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image(
-                  height: 200,
-                  width: 300,
-                  image: AssetImage('assets/images/shoe_logo_1.png'),),
+              Icon(IconlyBold.bag, size: 48, color: Colours.primary,),
               Text(
                 'Wearium',
                 style: TextStyle(
                     fontSize: 32,
                     color: Colours.primary,
-                    fontFamily: 'Balsamiq Sans'),
+                    fontFamily: 'Balsamiq Sans',),
               )
             ],
           ),

@@ -3,18 +3,18 @@ part of 'dependency_injection.dart';
 final sl = GetIt.instance;
 
 /// Injectiing Dependencies
-
 Future<void> init() async {
   await dotenv.load();
   await _initApiClient();
   await _initLocalStorage();
   await _initTheme();
   await _initHome();
+  await _initCart();
 }
 
 // Setup ApiClient
 Future<void> _initApiClient() async {
-  sl.registerLazySingleton(() => const ApiService(baseUrl: ApiConst.baseUrl));
+  sl.registerLazySingleton(() => ApiService(baseUrl: ApiConfig.baseUrl));
 }
 
 // Inject Local Storage instance
@@ -29,23 +29,29 @@ Future<void> _initLocalStorage() async {
 /// Feature --> Home
 Future<void> _initHome() async {
   sl
-    ..registerFactory(
-      () => HomeProvider(
-        getBanners: sl(),
-        getCategories: sl(),
-        getProducts: sl(),
-      ),
+    ..registerLazySingleton<HomeRemoteDataSrc>(
+      () => HomeRemoteDataSrcImpl(sl()),
+    )
+    ..registerLazySingleton<HomeRepo>(
+      () => HomeRepoImpl(sl()),
     )
     ..registerLazySingleton(() => GetBanners(sl()))
     ..registerLazySingleton(() => GetCategories(sl()))
     ..registerLazySingleton(() => GetProducts(sl()))
-    ..registerLazySingleton<HomeRepo>(
-      () => HomeRepoImpl(sl()),
-    )
-    ..registerLazySingleton<HomeRemoteDataSrc>(
-      () => HomeRemoteDataSrcImpl(sl()),
+    ..registerFactory(
+      () => HomeBloc(
+        getBanners: sl(),
+        getCategories: sl(),
+        getProducts: sl(),
+      ),
     );
 }
+
+/// Feature --> Cart
+Future<void> _initCart() async {
+  sl.registerLazySingleton<CartProvider>(CartProvider.new);
+}
+
 
 /// Feature --> Theme
 Future<void> _initTheme() async {

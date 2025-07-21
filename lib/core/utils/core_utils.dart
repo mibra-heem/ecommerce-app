@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:ecommerce_app/core/constants/api_const.dart';
+import 'package:ecommerce_app/core/app/resources/colors.dart';
+import 'package:ecommerce_app/core/app/resources/media.dart';
+import 'package:ecommerce_app/core/config/api.dart';
 import 'package:ecommerce_app/core/extensions/context_extension.dart';
-import 'package:ecommerce_app/core/resources/colors.dart';
-import 'package:ecommerce_app/core/resources/media.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -68,9 +68,24 @@ class CoreUtils {
     String? fallbackImage,
   }) {
     final imageProvider = (imageUrl != null && imageUrl.isNotEmpty
-        ? NetworkImage(ApiConst.baseUrl + imageUrl)
+        ? NetworkImage(ApiConfig.baseUrl + imageUrl)
         : AssetImage(fallbackImage ?? Media.defaultShoeImage)) as ImageProvider;
 
     return imageProvider;
+  }
+
+  /// Formats price with commas (e.g., 125000 -> 1,25,000)
+  static String currencyFormat(int price) {
+    final priceStr = price.toString();
+    final reg = RegExp(r'\B(?=(\d{3})+(?!\d))');
+    return priceStr.replaceAllMapped(reg, (match) => ',');
+  }
+
+  static Color parseColor(String colorHex) {
+    try {
+      return Color(int.parse(colorHex.replaceFirst('#', '0xff')));
+    } on Exception catch (_) {
+      return Colours.grey400;
+    }
   }
 }

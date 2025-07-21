@@ -7,7 +7,7 @@ abstract class HomeRepo {
   const HomeRepo();
 
   RFuture<List<BannerEntity>> getBanners();
-  RFuture<List<Category>> getCategories();
+  RFuture<List<CategoryEntity>> getCategories();
   RFuture<List<Product>> getProducts();
 
 }

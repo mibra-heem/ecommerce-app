@@ -1,5 +1,5 @@
 import 'package:ecommerce_app/core/extensions/context_extension.dart';
-import 'package:ecommerce_app/core/resources/media.dart';
+import 'package:ecommerce_app/core/app/resources/media.dart';
 import 'package:flutter/material.dart';
 
 class ChatTile extends StatelessWidget {

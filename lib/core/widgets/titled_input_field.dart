@@ -1,4 +1,4 @@
-import 'package:ecommerce_app/core/resources/fonts.dart';
+import 'package:ecommerce_app/core/app/resources/fonts.dart';
 import 'package:ecommerce_app/core/widgets/my_field.dart';
 import 'package:flutter/material.dart';
 

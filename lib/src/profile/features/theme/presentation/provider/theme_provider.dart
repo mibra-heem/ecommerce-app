@@ -15,13 +15,22 @@ class ThemeProvider extends ChangeNotifier {
   final CacheThemeMode _cacheThemeMode;
   final LoadThemeMode _loadThemeMode;
 
-  ThemeMode _themeMode = ThemeMode.system;
+  ThemeMode _themeMode = ThemeMode.dark;
 
   ThemeMode get themeMode => _themeMode;
 
   set themeMode(ThemeMode mode) {
     _themeMode = mode;
     notifyListeners();
+  }
+
+  Future<void> toggleTheme() async {
+    if (_themeMode == ThemeMode.light) {
+      themeMode = ThemeMode.dark;
+    } else {
+      themeMode = ThemeMode.light;
+    }
+    await _cacheThemeMode(themeMode.index);
   }
 
   Future<void> setTheme(Themes theme) async {

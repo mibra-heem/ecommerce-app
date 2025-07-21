@@ -1,5 +1,5 @@
 import 'package:ecommerce_app/core/extensions/context_extension.dart';
-import 'package:ecommerce_app/core/resources/colors.dart';
+import 'package:ecommerce_app/core/app/resources/colors.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 

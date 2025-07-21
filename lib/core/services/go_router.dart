@@ -1,70 +1,47 @@
-import 'package:ecommerce_app/core/constants/route_const.dart';
+import 'package:ecommerce_app/core/config/route.dart';
+import 'package:ecommerce_app/core/services/dependency_injection.dart';
+import 'package:ecommerce_app/src/cart/presentation/screen/cart_screen.dart';
 import 'package:ecommerce_app/src/dashboard/presentation/view/dashboard.dart';
-import 'package:ecommerce_app/src/home/presentation/provider/home_provider.dart';
+import 'package:ecommerce_app/src/home/presentation/bloc/home_bloc.dart';
 import 'package:ecommerce_app/src/home/presentation/views/home_view.dart';
-import 'package:ecommerce_app/src/splash/presentation/views/splash_screen.dart';
+import 'package:ecommerce_app/src/product/domain/entities/product.dart';
+import 'package:ecommerce_app/src/product/presentation/screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter router = GoRouter(
-  initialLocation: RoutePath.splash,
+  initialLocation: RoutePath.initial,
   navigatorKey: rootNavigatorKey,
   debugLogDiagnostics: true,
   routes: [
     GoRoute(
-      path: RoutePath.splash,
-      name: RouteName.splash,
-      builder: (context, state) {
-        return const SplashScreen();
-      },
-    ),
-    GoRoute(
       path: RoutePath.initial,
       name: RouteName.initial,
       redirect: (context, state) {
-        // if (sl<FirebaseAuth>().currentUser != null) {
-        //   debugPrint('Before startListening method................');
-        //   sl<ThemeProvider>().loadTheme();
-        //   sl<AudioCallProvider>().listeningForCall(context);
-        //   sl<AudioCallProvider>().listeningToCallReject(context);
-        //   sl<AudioCallProvider>().listenToCallerHangupBeforeAnswer(context);
-
-        //   return RoutePath.chat;
-        // }
-        Provider.of<HomeProvider>(context, listen: false).initHomeData();
+        if (state.fullPath == RoutePath.home) return null;
         return RoutePath.home;
       },
     ),
-    // GoRoute(
-    //   path: RoutePath.signIn,
-    //   name: RouteName.signIn,
-    //   builder:
-    //       (context, state) => BlocProvider(
-    //         create: (context) => sl<AuthBloc>(),
-    //         child: const SignInScreen(),
-    //       ),
-    // ),
-    // GoRoute(
-    //   path: RoutePath.signUp,
-    //   name: RouteName.signUp,
-    //   builder:
-    //       (context, state) => BlocProvider(
-    //         create: (context) => sl<AuthBloc>(),
-    //         child: const SignUpScreen(),
-    //       ),
-    // ),
-    // GoRoute(
-    //   path: RoutePath.forgetPassword,
-    //   name: RouteName.forgetPassword,
-    //   builder:
-    //       (context, state) => BlocProvider(
-    //         create: (context) => sl<AuthBloc>(),
-    //         child: const ForgotPasswordScreen(),
-    //       ),
-    // ),
+    GoRoute(
+      path: RoutePath.product,
+      name: RouteName.product,
+      builder: (context, state) {
+        final product = state.extra! as Product;
+        return ProductDetailScreen(
+          product: product,
+        );
+      },
+    ),
+    GoRoute(
+      path: RoutePath.cart,
+      name: RouteName.cart,
+      builder: (context, state) {
+        return const CartScreen();
+      },
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) {
         return Dashboard(shell: shell);
@@ -76,54 +53,28 @@ final GoRouter router = GoRouter(
               path: RoutePath.home,
               name: RouteName.home,
               builder: (context, state) {
-                debugPrint('Going to home view from here ......');
-                return const HomeView();
+                return BlocProvider(
+                  create: (context) => sl<HomeBloc>(),
+                  child: const HomeView(),
+                );
+              },
+            ),
+            GoRoute(
+              path: RoutePath.address,
+              name: RouteName.address,
+              builder: (context, state) {
+                return const Placeholder();
+              },
+            ),
+            GoRoute(
+              path: RoutePath.profile,
+              name: RouteName.profile,
+              builder: (context, state) {
+                return const Placeholder();
               },
             ),
           ],
         ),
-
-        // StatefulShellBranch(
-        //   routes: [
-        //     GoRoute(
-        //       path: RoutePath.profile,
-        //       name: RouteName.profile,
-        //       builder: (context, state) => const ProfileView(),
-        //     ),
-        //     GoRoute(
-        //       path: RoutePath.editProfile,
-        //       name: RouteName.editProfile,
-        //       builder:
-        //           (context, state) => BlocProvider(
-        //             create: (context) => sl<AuthBloc>(),
-        //             child: ChangeNotifierProvider(
-        //               create: (_) => ProfileProvider(),
-        //               child: const EditProfileView(),
-        //             ),
-        //           ),
-        //     ),
-        //     GoRoute(
-        //       path: RoutePath.favourite,
-        //       name: RouteName.favourite,
-        //       builder:
-        //           (context, state) =>
-        //               const Center(child: Text('Favourite View')),
-        //     ),
-        //     GoRoute(
-        //       path: RoutePath.notification,
-        //       name: RouteName.notification,
-        //       builder:
-        //           (context, state) =>
-        //               const Center(child: Text('Notification View')),
-        //     ),
-        //     GoRoute(
-        //       path: RoutePath.privacy,
-        //       name: RouteName.privacy,
-        //       builder:
-        //           (context, state) => const Center(child: Text('Privacy View')),
-        //     ),
-        //   ],
-        // ),
       ],
     ),
   ],

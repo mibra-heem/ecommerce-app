@@ -13,7 +13,9 @@ class HomeProvider extends ChangeNotifier {
     required GetBanners getBanners,
   })  : _getProducts = getProducts,
         _getCategories = getCategories,
-        _getBanners = getBanners;
+        _getBanners = getBanners {
+    Future.microtask(initHomeData);
+  }
 
   final GetProducts _getProducts;
   final GetCategories _getCategories;
@@ -23,7 +25,7 @@ class HomeProvider extends ChangeNotifier {
 
   int get currentCategory => _currentCategory;
 
-  set currentCategory(int index){
+  set currentCategory(int index) {
     _currentCategory = index;
     debugPrint('Current Category is : $_currentCategory');
     notifyListeners();
@@ -31,14 +33,13 @@ class HomeProvider extends ChangeNotifier {
 
   List<Product> _products = [];
   List<BannerEntity> _banners = [];
-  List<Category> _categories = [];
-
+  List<CategoryEntity> _categories = [];
 
   List<Product> get products => _products;
   List<BannerEntity> get banners => _banners;
-  List<Category> get categories => _categories;
+  List<CategoryEntity> get categories => _categories;
 
-  void initHomeData(){
+  void initHomeData() {
     getBannersHandler();
     getCategoriesHandler();
     getProductsHandler();
@@ -47,29 +48,23 @@ class HomeProvider extends ChangeNotifier {
   Future<void> getBannersHandler() async {
     final result = await _getBanners();
 
-    result.fold(
-      (failure) => failure.errorMessage,
-      (banners) {
-        debugPrint('Banners fetched successfully.');
-        _banners = banners;
-        debugPrint('$_banners');
-        notifyListeners();
-      }
-    );
+    result.fold((failure) => failure.errorMessage, (banners) {
+      debugPrint('Banners fetched successfully.');
+      _banners = banners;
+      debugPrint('$_banners');
+      notifyListeners();
+    });
   }
 
   Future<void> getCategoriesHandler() async {
     final result = await _getCategories();
 
-    result.fold(
-      (failure) => failure.errorMessage,
-      (categories) {
-        debugPrint('Categories fetched successfully.');
-        _categories = categories;
-        debugPrint('$_categories');
-        notifyListeners();
-      }
-    );
+    result.fold((failure) => failure.errorMessage, (categories) {
+      debugPrint('Categories fetched successfully.');
+      _categories = categories;
+      debugPrint('$_categories');
+      notifyListeners();
+    });
   }
 
   Future<void> getProductsHandler() async {
@@ -86,6 +81,4 @@ class HomeProvider extends ChangeNotifier {
       },
     );
   }
-
-  
 }

@@ -1,12 +1,13 @@
-import 'package:ecommerce_app/core/constants/api_const.dart';
+import 'package:ecommerce_app/core/config/api.dart';
 import 'package:ecommerce_app/core/services/api_service.dart';
+import 'package:ecommerce_app/src/cart/presentation/provider/cart_provider.dart';
 import 'package:ecommerce_app/src/home/data/datasources/home_remote_data_src.dart';
 import 'package:ecommerce_app/src/home/data/repos/home_repo_impl.dart';
 import 'package:ecommerce_app/src/home/domain/repos/home_repo.dart';
 import 'package:ecommerce_app/src/home/domain/usecases/get_banners.dart';
 import 'package:ecommerce_app/src/home/domain/usecases/get_categories.dart';
 import 'package:ecommerce_app/src/home/domain/usecases/get_products.dart';
-import 'package:ecommerce_app/src/home/presentation/provider/home_provider.dart';
+import 'package:ecommerce_app/src/home/presentation/bloc/home_bloc.dart';
 import 'package:ecommerce_app/src/profile/features/theme/data/datasource/theme_local_data_src.dart';
 import 'package:ecommerce_app/src/profile/features/theme/data/repo/theme_repo_impl.dart';
 import 'package:ecommerce_app/src/profile/features/theme/domain/repo/theme_repo.dart';

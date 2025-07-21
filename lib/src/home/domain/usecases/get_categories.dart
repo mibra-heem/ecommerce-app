@@ -3,13 +3,13 @@ import 'package:ecommerce_app/core/utils/usecases.dart';
 import 'package:ecommerce_app/src/home/domain/repos/home_repo.dart';
 import 'package:ecommerce_app/src/home/features/category/domain/entities/category.dart';
 
-class GetCategories extends UseCaseWithoutParams<List<Category>>{
+class GetCategories extends UseCaseWithoutParams<List<CategoryEntity>>{
 
   const GetCategories(this._repo);
 
   final HomeRepo _repo;
 
   @override
-  RFuture<List<Category>> call() => _repo.getCategories();
+  RFuture<List<CategoryEntity>> call() => _repo.getCategories();
   
 }

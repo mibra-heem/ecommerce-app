@@ -24,7 +24,7 @@ class HomeRepoImpl implements HomeRepo {
   }
 
   @override
-  RFuture<List<Category>> getCategories() async{
+  RFuture<List<CategoryEntity>> getCategories() async{
     try {
       final categories = await _remoteDataSrc.getCategories();
       return Right(categories);

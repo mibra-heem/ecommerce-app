@@ -1,169 +1,369 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:ecommerce_app/core/constants/api_const.dart';
+import 'package:ecommerce_app/core/app/resources/colors.dart';
+import 'package:ecommerce_app/core/app/resources/media.dart';
+import 'package:ecommerce_app/core/app/views/loading_view.dart';
+import 'package:ecommerce_app/core/config/api.dart';
 import 'package:ecommerce_app/core/extensions/context_extension.dart';
-import 'package:ecommerce_app/core/resources/colors.dart';
-import 'package:ecommerce_app/core/resources/media.dart';
-import 'package:ecommerce_app/core/utils/dimensions.dart';
-import 'package:ecommerce_app/src/home/presentation/provider/home_provider.dart';
-import 'package:ecommerce_app/src/home/presentation/widgets/product_card.dart';
+import 'package:ecommerce_app/core/widgets/not_found_text.dart';
+import 'package:ecommerce_app/core/widgets/popup_item.dart';
+import 'package:ecommerce_app/src/home/presentation/bloc/home_bloc.dart';
+import 'package:ecommerce_app/src/home/presentation/widgets/product_card_horizontal.dart';
+import 'package:ecommerce_app/src/home/presentation/widgets/product_card_vertical.dart';
+import 'package:ecommerce_app/src/product/data/models/product_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:iconly/iconly.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  ValueNotifier<int> categoryId = ValueNotifier(0);
+  // final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<HomeBloc>()
+      ..add(const GetBannersEvent())
+      ..add(const GetCategoriesEvent())
+      ..add(const GetProductsEvent());
+
+    // _scrollController.addListener(_onScroll());
+  }
+
+  // void _onScroll() {
+  //   final maxScroll = _scrollController.position.maxScrollExtent;
+  //   final currentScroll = _scrollController.position.pixels;
+  //   const threshold = 200; // Load more when 200px from bottom
+  //   if (currentScroll >= maxScroll - threshold) {
+  //     // context.read<HomeBloc>().add(const GetProductsEvent(loadMore: true));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          readOnly: true,
-          onTap: () {},
-          decoration: InputDecoration(
-            hintText: 'Search products...',
-            prefixIcon: const Icon(Icons.search),
-            filled: true,
-            fillColor: context.theme.colorScheme.surfaceBright,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
-        elevation: 0,
-        centerTitle: true,
-        foregroundColor: Colors.black,
-      ),
-      body: SingleChildScrollView(
+      appBar: _buildAppBar(),
+      body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 10,
-          children: [
-            // 🖼️ Auto Sliding Banner
-            Consumer<HomeProvider>(builder: (_, provider, __) {
-              return CarouselSlider(
-                options: CarouselOptions(
-                  height: Dimensions.height(120),
-                  autoPlay: true,
-                  autoPlayInterval: const Duration(seconds: 8),
-                  enlargeCenterPage: true,
-                  viewportFraction: 1,
-                ),
-                items: provider.banners.map((banner) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      width: double.infinity,
-                      imageUrl: ApiConst.baseUrl+banner.image,
-                      fit: BoxFit.fill,
-                      placeholder: (context, url) => const Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                      errorWidget: (context, url, error) {
-                        return const Image(
-                            image: AssetImage(Media.defaultShoeImage));
-                      },
-                    ),
-                  );
-                }).toList(),
-              );
-            }),
-            // const SizedBox(height: 10),
-            // 🧭 Horizontal Categories
-            SizedBox(
-              height: 30,
-              child: Consumer<HomeProvider>(builder: (_, provider, __) {
-                return ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: provider.categories.length,
-                  itemBuilder: (context, index) {
-                    final category = provider.categories[index];
-                    final isSelected = provider.currentCategory == index;
-                    return GestureDetector(
-                      onTap: () {
-                        provider.currentCategory = index;
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? Colours.primary
-                              : context.theme.colorScheme.surface,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          category.name,
-                          style: isSelected
-                              ? context.theme.textTheme.labelSmall
-                                  ?.copyWith(color: Colours.grey100)
-                              : context.theme.textTheme.labelSmall,
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }),
-            ),
-
-            // const SizedBox(height: 20),
-            Text(
-              'Featured',
-              style: context.theme.textTheme.headlineMedium,
-            ),
-            // const SizedBox(height: 10),
-            // 📦 Horizontal Product List
-            SizedBox(
-              height: context.height * .25,
-              child: Consumer<HomeProvider>(builder: (_, provider, __) {
-                return ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: provider.products.length,
-                  itemBuilder: (context, index) {
-                    final product = provider.products[index];
-                    return ProductCard(
-                      name: product.name,
-                      price: product.price,
-                      imageUrl: ApiConst.baseUrl + product.image!,
-                    );
-                  },
-                );
-              }),
-            ),
-
-            const SizedBox(height: 20),
-            Text(
-              'New Arrivals',
-              style: context.theme.textTheme.headlineMedium,
-            ),
-            // 🔲 Grid of Products
-            Consumer<HomeProvider>(builder: (_, provider, __) {
-              return GridView.builder(
-                itemCount: provider.products.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.63,
-                  mainAxisSpacing: 50,
-                  crossAxisSpacing: 16,
-                ),
-                itemBuilder: (context, index) {
-                  final product = provider.products[index];
-                  return ProductCard(
-                    name: product.name,
-                    price: product.price,
-                    imageUrl: ApiConst.baseUrl + product.image!,
-                  );
-                },
-              );
-            }),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(child: _buildBannerSlider()),
+            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+            SliverToBoxAdapter(child: _buildCategorySection()),
+            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+            SliverToBoxAdapter(child: _buildSectionTitle('Featured')),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            SliverToBoxAdapter(child: _buildFeaturedProducts()),
+            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+            SliverToBoxAdapter(child: _buildSectionTitle('New Arrivals')),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            _buildStaggeredProducts(),
           ],
         ),
       ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Text(
+        'Mohart',
+        style: context.theme.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(LucideIcons.search),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: const Badge(
+            isLabelVisible: false,
+            child: Icon(IconlyBold.notification),
+          ),
+          onPressed: () {},
+        ),
+        PopupMenuButton(
+          offset: const Offset(0, 45),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          icon: const Icon(LucideIcons.moreVertical),
+          itemBuilder: (_) => const [
+            PopupMenuItem<void>(
+              child: PopupItem(
+                title: 'Favourite',
+                icon: IconlyLight.heart,
+              ),
+              // onTap: () => ,
+            ),
+            PopupMenuItem<void>(
+              child: PopupItem(
+                title: 'Settings',
+                icon: IconlyLight.setting,
+              ),
+              // onTap: () => ,
+            ),
+          ],
+        ),
+      ],
+      elevation: 0,
+    );
+  }
+
+  // Widget _buildSearchBar() {
+  //   return GestureDetector(
+  //     onTap: () {},
+  //     child: Container(
+  //       padding: const EdgeInsets.symmetric(horizontal: 12),
+  //       height: 45,
+  //       decoration: BoxDecoration(
+  //         color: context.isDarkMode ? Colours.grey900 : Colours.white,
+  //         borderRadius: BorderRadius.circular(12),
+  //         boxShadow: [
+  //           BoxShadow(
+  //             color: Colors.black.withOpacity(0.05),
+  //             blurRadius: 4,
+  //             offset: const Offset(0, 2),
+  //           ),
+  //         ],
+  //       ),
+  //       alignment: Alignment.centerLeft,
+  //       child: Row(
+  //         children: [
+  //           const Icon(Icons.search, color: Colours.grey600),
+  //           const SizedBox(width: 8),
+  //           Text(
+  //             'Search products...',
+  //             style: context.theme.textTheme.bodyMedium
+  //                 ?.copyWith(color: Colours.grey600),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget _buildBannerSlider() {
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (_, state) {
+        if (state.isLoadingBanners) {
+          return const LoadingView();
+        } else if (state.banners.isEmpty) {
+          return const NotFoundText('No Products');
+        }
+        return CarouselSlider(
+          options: CarouselOptions(
+            height: context.height * 0.18,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 6),
+            enlargeCenterPage: true,
+            viewportFraction: 1,
+          ),
+          items: state.banners.map((banner) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: CachedNetworkImage(
+                imageUrl: ApiConfig.baseUrl + banner.image,
+                width: double.infinity,
+                fit: BoxFit.fill,
+                placeholder: (_, __) => const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                errorWidget: (_, __, ___) =>
+                    const Image(image: AssetImage(Media.defaultShoeImage)),
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  Widget _buildCategorySection() {
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (_, state) {
+        if (state.isLoadingCategories) {
+          return const LoadingView();
+        } else if (state.categories.isEmpty) {
+          return const NotFoundText('No Categories');
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle('Categories'),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 80,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount:
+                    state.categories.where((c) => c.parentId == null).length,
+                itemBuilder: (context, index) {
+                  final category = state.categories[index];
+                  return ValueListenableBuilder(
+                    valueListenable: categoryId,
+                    builder: (context, value, _) {
+                      final isSelected = categoryId.value == index;
+                      return GestureDetector(
+                        onTap: () {
+                          categoryId.value = index;
+                        },
+                        child: Container(
+                          width: 80,
+                          margin: const EdgeInsets.only(right: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: context.isDarkMode
+                                ? Colours.grey900
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? Colours.primary
+                                  : Colours.grey300,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Category icon
+                              if (category.icon != null)
+                                CachedNetworkImage(
+                                  imageUrl: ApiConfig.baseUrl + category.icon!,
+                                  width: 40,
+                                  height: 40,
+                                  errorWidget: (_, __, ___) {
+                                    return const Icon(Icons.category);
+                                  },
+                                )
+                              else
+                                const Icon(Icons.image),
+                              const SizedBox(height: 6),
+                              Text(
+                                category.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.theme.textTheme.labelSmall
+                                    ?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSectionTitle(String title, {VoidCallback? onViewAll}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: context.theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        if (onViewAll != null)
+          TextButton(
+            onPressed: onViewAll,
+            child: const Text('View All'),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildFeaturedProducts() {
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (_, state) {
+        if (state.isLoadingProducts) return const LoadingView();
+        if (state.products.isEmpty) return const NotFoundText('No Products');
+
+        return SizedBox(
+          height: context.width * 0.36,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: state.products.length,
+            itemBuilder: (context, index) {
+              final products = state.products.reversed.toList();
+              final product = (products[index] as ProductModel).copyWith(
+                solds: 1500,
+                reviews: List.filled(160, 'Good, Product.'),
+                rating: 4.5,
+                brand: 'Mohart',
+                colors: ['#FF5733', '#4285F4', '#000000'],
+                sizes: ['Small', 'Medium', 'Large'],
+                materials: ['Leather', 'Paper', 'Wooden', 'Plastic'],
+              );
+              return ProductCardHorizontal(
+                product: product,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStaggeredProducts() {
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (_, state) {
+        if (state.isLoadingProducts) {
+          return const SliverToBoxAdapter(
+            child: LoadingView(),
+          );
+        }
+        if (state.products.isEmpty) {
+          return const SliverToBoxAdapter(
+            child: NotFoundText('No Products'),
+          );
+        }
+
+        return SliverMasonryGrid.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childCount: state.products.length,
+          itemBuilder: (context, index) {
+            final product = state.products[index];
+            final imageUrl =
+                (product.images != null && product.images!.isNotEmpty)
+                    ? ApiConfig.baseUrl + product.images!.first
+                    : 'https://via.placeholder.com/150';
+            return ProductCardVertical(
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              imageUrl: imageUrl,
+              brand: 'Mohart',
+              rating: product.rating,
+              sold: 1500,
+              reviews: 96,
+            );
+          },
+        );
+      },
     );
   }
 }

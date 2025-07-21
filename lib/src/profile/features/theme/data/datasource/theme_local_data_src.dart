@@ -1,4 +1,4 @@
-import 'package:ecommerce_app/core/constants/storage_const.dart';
+import 'package:ecommerce_app/core/config/storage.dart';
 import 'package:ecommerce_app/core/errors/exception.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,7 +19,7 @@ class ThemeLocalDataSrcImpl implements ThemeLocalDataSrc {
   @override
   Future<void> cacheThemeMode(int index) async {
     try {
-      await _prefs.setInt(StorageConst.theme, index);
+      await _prefs.setInt(StorageConfig.theme, index);
     } catch (e, s) {
       debugPrintStack(stackTrace: s);
       throw CacheException(
@@ -33,7 +33,7 @@ class ThemeLocalDataSrcImpl implements ThemeLocalDataSrc {
   Future<int> loadThemeMode() async {
     try {
       
-      return _prefs.getInt(StorageConst.theme) ?? ThemeMode.system.index;
+      return _prefs.getInt(StorageConfig.theme) ?? ThemeMode.dark.index;
 
     } catch (e, s) {
       debugPrintStack(stackTrace: s);

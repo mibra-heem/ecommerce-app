@@ -1,4 +1,4 @@
-import 'package:ecommerce_app/core/resources/colors.dart';
+import 'package:ecommerce_app/core/app/resources/colors.dart';
 import 'package:flutter/material.dart';
 
 class RoundedButton extends StatelessWidget {

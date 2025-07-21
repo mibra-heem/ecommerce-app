@@ -1,4 +1,4 @@
-import 'package:ecommerce_app/core/constants/api_const.dart';
+import 'package:ecommerce_app/core/config/api.dart';
 import 'package:ecommerce_app/core/errors/exception.dart';
 import 'package:ecommerce_app/core/services/api_service.dart';
 import 'package:ecommerce_app/core/utils/typedef.dart';
@@ -14,7 +14,7 @@ abstract class HomeRemoteDataSrc {
   const HomeRemoteDataSrc();
 
   Future<List<BannerEntity>> getBanners();
-  Future<List<Category>> getCategories();
+  Future<List<CategoryEntity>> getCategories();
   Future<List<Product>> getProducts();
 }
 
@@ -26,7 +26,7 @@ class HomeRemoteDataSrcImpl implements HomeRemoteDataSrc {
   @override
   Future<List<BannerEntity>> getBanners() async {
     try {
-      final data = await _apiService.get(url: ApiConst.bannersUrl);
+      final data = await _apiService.get(url: ApiConfig.bannersUrl);
 
       debugPrint('Banners Data : $data');
 
@@ -44,9 +44,9 @@ class HomeRemoteDataSrcImpl implements HomeRemoteDataSrc {
   }
 
   @override
-  Future<List<Category>> getCategories() async {
+  Future<List<CategoryEntity>> getCategories() async {
     try {
-      final data = await _apiService.get(url: ApiConst.categoriesUrl);
+      final data = await _apiService.get(url: ApiConfig.categoriesUrl);
 
       debugPrint('Categories Data : $data');
 
@@ -66,7 +66,7 @@ class HomeRemoteDataSrcImpl implements HomeRemoteDataSrc {
   @override
   Future<List<Product>> getProducts() async {
     try {
-      final data = await _apiService.get(url: ApiConst.productsUrl);
+      final data = await _apiService.get(url: ApiConfig.productsUrl);
 
       debugPrint('Products Data : $data');
 
