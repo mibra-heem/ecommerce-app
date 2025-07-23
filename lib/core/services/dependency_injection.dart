@@ -2,6 +2,7 @@ import 'package:ecommerce_app/core/config/api.dart';
 import 'package:ecommerce_app/core/services/api_service.dart';
 import 'package:ecommerce_app/src/address/presentation/provider/address_provider.dart';
 import 'package:ecommerce_app/src/cart/presentation/provider/cart_provider.dart';
+import 'package:ecommerce_app/src/favourite/presentation/provider/favourite_provider.dart';
 import 'package:ecommerce_app/src/home/data/datasources/home_remote_data_src.dart';
 import 'package:ecommerce_app/src/home/data/repos/home_repo_impl.dart';
 import 'package:ecommerce_app/src/home/domain/repos/home_repo.dart';
@@ -9,6 +10,10 @@ import 'package:ecommerce_app/src/home/domain/usecases/get_banners.dart';
 import 'package:ecommerce_app/src/home/domain/usecases/get_categories.dart';
 import 'package:ecommerce_app/src/home/domain/usecases/get_products.dart';
 import 'package:ecommerce_app/src/home/presentation/bloc/home_bloc.dart';
+import 'package:ecommerce_app/src/payment/data/datasource/payment_remote_data_src.dart';
+import 'package:ecommerce_app/src/payment/data/repos/payment_repo_impl.dart';
+import 'package:ecommerce_app/src/payment/domain/repos/payment_repo.dart';
+import 'package:ecommerce_app/src/payment/domain/usecases/create_payment_intent.dart';
 import 'package:ecommerce_app/src/payment/presentation/provider/payment_provider.dart';
 import 'package:ecommerce_app/src/profile/features/theme/data/datasource/theme_local_data_src.dart';
 import 'package:ecommerce_app/src/profile/features/theme/data/repo/theme_repo_impl.dart';
@@ -17,6 +22,7 @@ import 'package:ecommerce_app/src/profile/features/theme/domain/usecases/cache_t
 import 'package:ecommerce_app/src/profile/features/theme/domain/usecases/load_theme_mode.dart';
 import 'package:ecommerce_app/src/profile/features/theme/presentation/provider/theme_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -41,7 +41,7 @@ class AppTheme {
       ),
     ),
     badgeTheme: const BadgeThemeData(
-      backgroundColor: Colours.primary,
+      backgroundColor: Colours.red,
       offset: Offset.zero,
       textColor: Colours.white,
     ),
@@ -92,7 +92,7 @@ class AppTheme {
       ),
     ),
     badgeTheme: const BadgeThemeData(
-      backgroundColor: Colours.primary,
+      backgroundColor: Colours.red,
       offset: Offset.zero,
       textColor: Colours.white,
     ),

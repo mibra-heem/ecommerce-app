@@ -26,35 +26,47 @@ class PaymentScreen extends StatelessWidget {
               context,
               icon: Icons.money,
               label: 'Cash on Delivery (COD)',
-              value: PaymentMethod.cod,
-              selected: provider.selectedMethod == PaymentMethod.cod,
-              onSelect: () => provider.selectMethod(PaymentMethod.cod),
+              value: PaymentMethods.cod,
+              selected: provider.selectedMethod == PaymentMethods.cod,
+              onSelect: () => provider.selectMethod(PaymentMethods.cod),
             ),
             const SizedBox(height: 10),
             _buildPaymentOption(
               context,
               icon: Icons.credit_card,
               label: 'Credit/Debit Card (Stripe)',
-              value: PaymentMethod.stripe,
-              selected: provider.selectedMethod == PaymentMethod.stripe,
-              onSelect: () => provider.selectMethod(PaymentMethod.stripe),
+              value: PaymentMethods.stripe,
+              selected: provider.selectedMethod == PaymentMethods.stripe,
+              onSelect: () => provider.selectMethod(PaymentMethods.stripe),
             ),
             const SizedBox(height: 10),
             _buildPaymentOption(
               context,
               icon: Icons.account_balance_wallet,
               label: 'PayPal',
-              value: PaymentMethod.paypal,
-              selected: provider.selectedMethod == PaymentMethod.paypal,
-              onSelect: () => provider.selectMethod(PaymentMethod.paypal),
+              value: PaymentMethods.paypal,
+              selected: provider.selectedMethod == PaymentMethods.paypal,
+              onSelect: () => provider.selectMethod(PaymentMethods.paypal),
             ),
             const Spacer(),
 
+            // Confirm button
             ElevatedButton(
-              onPressed: () {
-                // Navigate to order review/confirmation screen
-                context.pushNamed(RouteName.confirmOrder);
-              },
+              onPressed: provider.isProcessing
+                  ? null
+                  : () async {
+                      if (provider.selectedMethod == PaymentMethods.stripe) {
+                        // You may fetch cart total dynamically here
+                        const totalAmount =
+                            1000; // Amount in PKR, convert in backend
+                        await provider.processPayment(totalAmount);
+                      }
+
+                      // Navigate to confirm order screen
+                      if (!provider.isProcessing) {
+                        await context.pushNamed(RouteName.confirmOrder);
+                      }
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colours.primary,
                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -62,12 +74,22 @@ class PaymentScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Center(
-                child: Text(
-                  'Confirm & Continue',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
+              child: provider.isProcessing
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Center(
+                      child: Text(
+                        'Confirm & Continue',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
             ),
           ],
         ),
@@ -79,7 +101,7 @@ class PaymentScreen extends StatelessWidget {
     BuildContext context, {
     required IconData icon,
     required String label,
-    required PaymentMethod value,
+    required PaymentMethods value,
     required bool selected,
     required VoidCallback onSelect,
   }) {
@@ -89,7 +111,7 @@ class PaymentScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: selected
-              ? Colours.primary.withOpacity(0.1)
+              ? Colours.primary.withAlpha(25)
               : (context.isDarkMode ? Colours.grey900 : Colours.grey100),
           border: Border.all(
             color: selected ? Colours.primary : Colours.grey300,
@@ -109,7 +131,7 @@ class PaymentScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Radio<PaymentMethod>(
+            Radio<PaymentMethods>(
               value: value,
               groupValue: context.read<PaymentProvider>().selectedMethod,
               onChanged: (_) => onSelect(),

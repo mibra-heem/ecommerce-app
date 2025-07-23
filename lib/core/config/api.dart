@@ -1,4 +1,3 @@
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiConfig{
@@ -17,5 +16,9 @@ class ApiConfig{
   static const productsUrl = '/api/user/products';
   static const bannersUrl = '/api/user/banners';
   static const categoriesUrl = '/api/user/categories';
+
+  // Create Stripe Payment Intent
+  static const createPaymentIntent = '/api/create-payment-intent';
+
 
 }

@@ -4,6 +4,7 @@ import 'package:ecommerce_app/core/services/go_router.dart';
 import 'package:ecommerce_app/core/utils/dimensions.dart';
 import 'package:ecommerce_app/src/address/presentation/provider/address_provider.dart';
 import 'package:ecommerce_app/src/cart/presentation/provider/cart_provider.dart';
+import 'package:ecommerce_app/src/favourite/presentation/provider/favourite_provider.dart';
 import 'package:ecommerce_app/src/profile/features/theme/presentation/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => sl<CartProvider>()),
         ChangeNotifierProvider(create: (_) => sl<AddressProvider>()),
+        ChangeNotifierProvider(create: (_) => sl<FavouriteProvider>()),
         ChangeNotifierProvider(
           create: (_) => sl<ThemeProvider>(),
         ),

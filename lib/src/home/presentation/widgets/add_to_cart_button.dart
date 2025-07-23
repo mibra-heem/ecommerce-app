@@ -23,7 +23,7 @@ class _AddToCartButtonState extends State<AddToCartButton> {
     await Future<void>.delayed(const Duration(milliseconds: 500));
 
     final product = widget.product;
-    if(!mounted) return;
+    if (!mounted) return;
     context.read<CartProvider>().addToCart(
           CartItem(
             id: product.id,
@@ -74,8 +74,11 @@ class _AddToCartButtonState extends State<AddToCartButton> {
             : const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.shopping_bag_outlined,
-                      color: Colors.white, size: 14),
+                  Icon(
+                    Icons.shopping_bag_outlined,
+                    color: Colors.white,
+                    size: 14,
+                  ),
                   SizedBox(width: 4),
                   Text(
                     'Add',

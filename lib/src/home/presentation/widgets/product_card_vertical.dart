@@ -5,10 +5,12 @@ import 'package:ecommerce_app/core/config/route.dart';
 import 'package:ecommerce_app/core/extensions/context_extension.dart';
 import 'package:ecommerce_app/core/extensions/int_extension.dart';
 import 'package:ecommerce_app/core/utils/core_utils.dart';
+import 'package:ecommerce_app/src/favourite/presentation/provider/favourite_provider.dart';
 import 'package:ecommerce_app/src/home/presentation/widgets/add_to_cart_button.dart';
 import 'package:ecommerce_app/src/product/domain/entities/product.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class ProductCardVertical extends StatelessWidget {
   const ProductCardVertical({
@@ -23,6 +25,7 @@ class ProductCardVertical extends StatelessWidget {
     final imageUrl = (product.images != null && product.images!.isNotEmpty)
         ? ApiConfig.baseUrl + product.images!.first
         : 'https://via.placeholder.com/150';
+    debugPrint('ProductCardVertical building .....');
 
     return Container(
       decoration: BoxDecoration(
@@ -73,7 +76,7 @@ class ProductCardVertical extends StatelessWidget {
                 right: 8,
                 child: InkWell(
                   onTap: () {
-                    // Add to favourites
+                    context.read<FavouriteProvider>().toggleFavourite(product);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(6),
@@ -88,10 +91,18 @@ class ProductCardVertical extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.favorite_border,
-                      size: 18,
-                      color: Colours.primary,
+                    child: Selector<FavouriteProvider, bool>(
+                      selector: (_, provider) => provider.isFavourite(product),
+                      builder: (_, isFavourite, __) {
+                        debugPrint('Favourite Icon rebuilding only...');
+                        return Icon(
+                          isFavourite
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border,
+                          size: 18,
+                          color: Colours.primary,
+                        );
+                      },
                     ),
                   ),
                 ),

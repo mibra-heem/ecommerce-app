@@ -5,6 +5,8 @@ final sl = GetIt.instance;
 /// Injectiing Dependencies
 Future<void> init() async {
   await dotenv.load();
+  // Set your Stripe publishable key
+  Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
   await _initApiClient();
   await _initLocalStorage();
   await _initTheme();
@@ -12,6 +14,7 @@ Future<void> init() async {
   await _initCart();
   await _initAddress();
   await _initPayment();
+  await _initFavourite();
 }
 
 // Setup ApiClient
@@ -61,7 +64,22 @@ Future<void> _initAddress() async {
 
 /// Feature --> Payment
 Future<void> _initPayment() async {
-  sl.registerLazySingleton<PaymentProvider>(PaymentProvider.new);
+  sl
+    ..registerLazySingleton<PaymentProvider>(() => PaymentProvider(sl()))
+    ..registerLazySingleton(
+      () => CreatePaymentIntent(sl()),
+    )
+    ..registerLazySingleton<PaymentRepo>(
+      () => PaymentRepoImpl(sl()),
+    )
+    ..registerLazySingleton<PaymentRemoteDataSrc>(
+      () => PaymentRemoteDataSrcImpl(sl()),
+    );
+}
+
+/// Feature --> Favourite
+Future<void> _initFavourite() async {
+  sl.registerLazySingleton<FavouriteProvider>(FavouriteProvider.new);
 }
 
 /// Feature --> Theme

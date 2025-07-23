@@ -4,6 +4,7 @@ import 'package:ecommerce_app/core/app/resources/colors.dart';
 import 'package:ecommerce_app/core/app/resources/media.dart';
 import 'package:ecommerce_app/core/app/views/loading_view.dart';
 import 'package:ecommerce_app/core/config/api.dart';
+import 'package:ecommerce_app/core/config/route.dart';
 import 'package:ecommerce_app/core/extensions/context_extension.dart';
 import 'package:ecommerce_app/core/widgets/not_found_text.dart';
 import 'package:ecommerce_app/core/widgets/popup_item.dart';
@@ -14,6 +15,7 @@ import 'package:ecommerce_app/src/product/data/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconly/iconly.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -100,15 +102,15 @@ class _HomeViewState extends State<HomeView> {
             borderRadius: BorderRadius.circular(20),
           ),
           icon: const Icon(LucideIcons.moreVertical),
-          itemBuilder: (_) => const [
+          itemBuilder: (_) => [
             PopupMenuItem<void>(
-              child: PopupItem(
+              child: const PopupItem(
                 title: 'Favourite',
                 icon: IconlyLight.heart,
               ),
-              // onTap: () => ,
+              onTap: () => context.pushNamed(RouteName.favourite),
             ),
-            PopupMenuItem<void>(
+            const PopupMenuItem<void>(
               child: PopupItem(
                 title: 'Settings',
                 icon: IconlyLight.setting,

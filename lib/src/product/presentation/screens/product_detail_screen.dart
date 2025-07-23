@@ -8,9 +8,11 @@ import 'package:ecommerce_app/core/extensions/int_extension.dart';
 import 'package:ecommerce_app/core/utils/core_utils.dart';
 import 'package:ecommerce_app/src/cart/domain/entities/cart_item.dart';
 import 'package:ecommerce_app/src/cart/presentation/provider/cart_provider.dart';
+import 'package:ecommerce_app/src/favourite/presentation/provider/favourite_provider.dart';
 import 'package:ecommerce_app/src/product/domain/entities/product.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -26,7 +28,6 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _currentImageIndex = 0;
-  bool _isFavourite = false;
   String? _selectedSize;
   String? _selectedColor;
   bool _isDescExpanded = false;
@@ -42,29 +43,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ?.copyWith(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        actionsPadding: const EdgeInsets.only(right: 8),
         actions: [
           Consumer<CartProvider>(
             builder: (_, cart, __) {
               return Badge(
                 label: Text('${cart.totalItems}'),
                 isLabelVisible: cart.totalItems > 0,
-                offset: Offset.zero,
+                offset: const Offset(-4, 4),
                 child: IconButton(
-                  icon: const Icon(Icons.shopping_cart_outlined),
+                  icon: const Icon(Icons.shopping_cart, size: 24,),
                   onPressed: () {
                     context.pushNamed(RouteName.cart);
                   },
                 ),
               );
-            },
-          ),
-          IconButton(
-            icon: Icon(
-              _isFavourite ? Icons.favorite : Icons.favorite_border,
-              color: Colours.primary,
-            ),
-            onPressed: () {
-              setState(() => _isFavourite = !_isFavourite);
             },
           ),
         ],
@@ -168,6 +161,43 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             );
           }).toList(),
         ),
+        // Favourite Icon
+        Positioned(
+          top: 12,
+          right: 12,
+          child: InkWell(
+            onTap: () {
+              context.read<FavouriteProvider>().toggleFavourite(product);
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.surface,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(25),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Selector<FavouriteProvider, bool>(
+                selector: (_, provider) => provider.isFavourite(product),
+                builder: (_, isFavourite, __) {
+                  debugPrint('Favourite Icon rebuilding only...');
+                  return Icon(
+                    isFavourite
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border,
+                    size: 24,
+                    color: Colours.primary,
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
         // Dots Indicator
         Positioned(
           bottom: 8,
@@ -181,7 +211,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 decoration: BoxDecoration(
                   color: _currentImageIndex == index
                       ? Colours.primary
-                      : Colors.white70,
+                      : Colours.grey500,
                   shape: BoxShape.circle,
                 ),
               );

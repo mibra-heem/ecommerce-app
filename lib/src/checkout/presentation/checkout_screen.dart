@@ -10,64 +10,77 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class CheckoutScreen extends StatelessWidget {
+class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
+
+  @override
+  State<CheckoutScreen> createState() => _CheckoutScreenState();
+}
+
+class _CheckoutScreenState extends State<CheckoutScreen> {
+  bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
     final cartProvider = context.watch<CartProvider>();
     final addressProvider = context.watch<AddressProvider>();
 
-    debugPrint('Building CheckoutScreen..........');
-
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Checkout'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// ADDRESS SECTION
-            _buildAddressSection(context, addressProvider),
+      appBar: AppBar(title: const Text("Checkout")),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      /// ADDRESS SECTION
+                      _buildAddressSection(context, addressProvider),
 
-            const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-            /// CART SUMMARY
-            _buildCartSummary(context, cartProvider),
+                      /// CART SUMMARY
+                      _buildCartSummary(context, cartProvider),
 
-            const SizedBox(height: 20),
+                      const Spacer(),
+                      const SizedBox(height: 20),
 
-            /// ORDER SUMMARY (Subtotal, Shipping, Total)
-            _buildOrderSummary(context, cartProvider),
+                      /// ORDER SUMMARY (Subtotal, Shipping, Total)
+                      _buildOrderSummary(context, cartProvider),
 
-            const Spacer(),
-
-            /// PROCEED TO PAYMENT BUTTON
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colours.primary,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
-              onPressed: addressProvider.hasAddress
-                  ? () {
-                      context.pushNamed(RouteName.payment);
-                    }
-                  : null,
-              child: const Center(
-                child: Text(
-                  'Proceed to Payment',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SizedBox(
+          width: double.infinity,
+          height: 50, // or 56 / 60 as needed
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colours.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
-          ],
+            onPressed: addressProvider.hasAddress
+                ? () => context.pushNamed(RouteName.payment)
+                : null,
+            child: const Text(
+              'Proceed to Payment',
+              style: TextStyle(fontSize: 16, color: Colors.white),
+            ),
+          ),
         ),
       ),
     );
@@ -136,6 +149,9 @@ class CheckoutScreen extends StatelessWidget {
 
   /// Cart Summary
   Widget _buildCartSummary(BuildContext context, CartProvider cartProvider) {
+    final cartItems = cartProvider.items.values.toList();
+    final visibleItems = _isExpanded ? cartItems : cartItems.take(2).toList();
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -149,24 +165,27 @@ class CheckoutScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Your Cart',
+                'Cart Summary',
                 style: context.theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (cartProvider.items.length > 2)
-                TextButton(
+              if (cartItems.length > 2)
+                TextButton.icon(
                   onPressed: () {
-                    // Navigate to CartScreen (if user wants full view)
+                    setState(() {
+                      _isExpanded = !_isExpanded;
+                    });
                   },
-                  child: const Text('View All'),
+                  icon: Icon(_isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down),
+                  label: Text(_isExpanded ? 'Show Less' : 'View All'),
                 ),
             ],
           ),
           const SizedBox(height: 10),
-
-          // Show first 2 items only
-          ...cartProvider.items.values.take(2).map((item) {
+          ...visibleItems.map((item) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Row(
@@ -179,8 +198,7 @@ class CheckoutScreen extends StatelessWidget {
                       width: 50,
                       height: 50,
                       placeholder: (_, __) => const Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
+                          child: CircularProgressIndicator(strokeWidth: 2)),
                       errorWidget: (_, __, ___) =>
                           const Icon(Icons.broken_image),
                     ),
@@ -222,7 +240,15 @@ class CheckoutScreen extends StatelessWidget {
         color: context.isDarkMode ? Colours.grey900 : Colours.grey100,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            'Order Summary',
+            style: context.theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
           _buildSummaryRow('Subtotal', subtotal),
           const SizedBox(height: 8),
           _buildSummaryRow('Shipping', shipping),

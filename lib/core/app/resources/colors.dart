@@ -25,6 +25,10 @@ class Colours {
   // Neutral colors
   static const white = Color(0xFFFFFFFF);
   static const black = Color(0xFF000000);
+  static const red = Color(0xFFE74C3C);
+  static const green = Color(0xFF34A33C);
+  static const blue = Color(0xFF3498DB);
+  static const yellow = Color(0xFFFFC107);
   static const grey = Color(0xFF9E9E9E);
 
   // Shades
@@ -55,9 +59,9 @@ class Colours {
   static const tileDark = Color(0xFF1E1E1E);
 
   // Utility Colors
-  static const success = Color(0xFF34A33C);
-  static const info = Color(0xFF3498DB);
-  static const warning = Color(0xFFF39C12);
-  static const danger = Color(0xFFE74C3C);
-  static const disable = Color(0xFF7D7D7D);
+  static const success = green;
+  static const info = blue;
+  static const warning = yellow;
+  static const danger = red;
+  static const disable = grey;
 }

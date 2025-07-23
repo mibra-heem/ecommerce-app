@@ -24,8 +24,8 @@ class _DashboardState extends State<Dashboard> {
     ),
     _NavItem(
       label: 'Cart',
-      activeIcon: IconlyBold.bag,
-      inactiveIcon: IconlyLight.bag,
+      activeIcon: Icons.shopping_cart_rounded,
+      inactiveIcon: Icons.shopping_cart_outlined,
     ),
     _NavItem(
       label: 'Messages',

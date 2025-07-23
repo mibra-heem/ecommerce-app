@@ -6,6 +6,7 @@ import 'package:ecommerce_app/src/address/presentation/screens/adress_form_scree
 import 'package:ecommerce_app/src/cart/presentation/screen/cart_screen.dart';
 import 'package:ecommerce_app/src/checkout/presentation/checkout_screen.dart';
 import 'package:ecommerce_app/src/dashboard/presentation/view/dashboard.dart';
+import 'package:ecommerce_app/src/favourite/presentation/screens/favourite_screen.dart';
 import 'package:ecommerce_app/src/home/presentation/bloc/home_bloc.dart';
 import 'package:ecommerce_app/src/home/presentation/views/home_view.dart';
 import 'package:ecommerce_app/src/order/presentation/screens/order_screen.dart';
@@ -41,6 +42,13 @@ final GoRouter router = GoRouter(
         return ProductDetailScreen(
           product: product,
         );
+      },
+    ),
+    GoRoute(
+      path: RoutePath.favourite,
+      name: RouteName.favourite,
+      builder: (context, state) {
+        return const FavouriteScreen();
       },
     ),
     GoRoute(

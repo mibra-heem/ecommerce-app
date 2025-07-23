@@ -6,6 +6,7 @@ class RoutePath{
   static const splash = '/splash';
   static const home = '/home';
   static const product = '/product/:slug';
+  static const favourite = '/favourite';
   static const cart = '/cart';
   static const cartView = '/cart-view';
   static const profile = '/profile';
@@ -28,7 +29,8 @@ class RouteName{
   static const initial = 'initial';
   static const splash = 'splash';
   static const home = 'home';
-  static const product = 'product';
+  static const product = 'product-detail';
+  static const favourite = 'favourite';
   static const cart = 'cart';
   static const cartView = 'cart-view';
   static const profile = 'profile';
