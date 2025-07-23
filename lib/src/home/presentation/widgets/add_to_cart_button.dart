@@ -20,7 +20,10 @@ class _AddToCartButtonState extends State<AddToCartButton> {
   Future<void> _handleAddToCart(BuildContext context) async {
     setState(() => _isAdding = true);
 
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+
     final product = widget.product;
+    if(!mounted) return;
     context.read<CartProvider>().addToCart(
           CartItem(
             id: product.id,

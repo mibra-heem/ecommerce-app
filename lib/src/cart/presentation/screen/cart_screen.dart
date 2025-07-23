@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce_app/core/app/resources/colors.dart';
 import 'package:ecommerce_app/core/config/api.dart';
+import 'package:ecommerce_app/core/config/route.dart';
 import 'package:ecommerce_app/core/extensions/context_extension.dart';
 import 'package:ecommerce_app/src/cart/presentation/provider/cart_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class CartScreen extends StatelessWidget {
@@ -69,8 +71,10 @@ class CartScreen extends StatelessWidget {
                                       strokeWidth: 2)),
                               errorWidget: (_, __, ___) => const ColoredBox(
                                 color: Colours.grey300,
-                                child: Icon(Icons.broken_image,
-                                    color: Colours.grey600,),
+                                child: Icon(
+                                  Icons.broken_image,
+                                  color: Colours.grey600,
+                                ),
                               ),
                             ),
                           ),
@@ -196,7 +200,7 @@ class CartScreen extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        // TODO: Handle checkout flow
+                        context.pushNamed(RouteName.checkout);
                       },
                       child: const Text(
                         'Checkout',

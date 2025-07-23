@@ -10,6 +10,8 @@ Future<void> init() async {
   await _initTheme();
   await _initHome();
   await _initCart();
+  await _initAddress();
+  await _initPayment();
 }
 
 // Setup ApiClient
@@ -52,6 +54,15 @@ Future<void> _initCart() async {
   sl.registerLazySingleton<CartProvider>(CartProvider.new);
 }
 
+/// Feature --> Address
+Future<void> _initAddress() async {
+  sl.registerLazySingleton<AddressProvider>(AddressProvider.new);
+}
+
+/// Feature --> Payment
+Future<void> _initPayment() async {
+  sl.registerLazySingleton<PaymentProvider>(PaymentProvider.new);
+}
 
 /// Feature --> Theme
 Future<void> _initTheme() async {

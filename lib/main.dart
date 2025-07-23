@@ -2,6 +2,7 @@ import 'package:ecommerce_app/core/app/themes/app_theme.dart';
 import 'package:ecommerce_app/core/services/dependency_injection.dart';
 import 'package:ecommerce_app/core/services/go_router.dart';
 import 'package:ecommerce_app/core/utils/dimensions.dart';
+import 'package:ecommerce_app/src/address/presentation/provider/address_provider.dart';
 import 'package:ecommerce_app/src/cart/presentation/provider/cart_provider.dart';
 import 'package:ecommerce_app/src/profile/features/theme/presentation/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => sl<CartProvider>()),
+        ChangeNotifierProvider(create: (_) => sl<AddressProvider>()),
         ChangeNotifierProvider(
           create: (_) => sl<ThemeProvider>(),
         ),

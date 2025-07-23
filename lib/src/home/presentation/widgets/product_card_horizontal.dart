@@ -52,7 +52,7 @@ class ProductCardHorizontal extends StatelessWidget {
                   onTap: () {
                     context.pushNamed(
                       RouteName.product,
-                      pathParameters: {'id': product.id},
+                      pathParameters: {'slug': product.slug},
                       extra: product,
                     );
                   },
@@ -192,41 +192,3 @@ class ProductCardHorizontal extends StatelessWidget {
     );
   }
 }
-
-/**
- * 
- * InkWell(
-                      onTap: () {
-                        // Add to cart logic
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colours.primary,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(
-                              IconlyLight.bag_2,
-                              color: Colors.white,
-                              size: 15,
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              'Add',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
- */

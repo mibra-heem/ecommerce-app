@@ -1,43 +1,36 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce_app/core/app/resources/colors.dart';
+import 'package:ecommerce_app/core/config/api.dart';
+import 'package:ecommerce_app/core/config/route.dart';
 import 'package:ecommerce_app/core/extensions/context_extension.dart';
 import 'package:ecommerce_app/core/extensions/int_extension.dart';
 import 'package:ecommerce_app/core/utils/core_utils.dart';
 import 'package:ecommerce_app/src/home/presentation/widgets/add_to_cart_button.dart';
 import 'package:ecommerce_app/src/product/domain/entities/product.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ProductCardVertical extends StatelessWidget {
   const ProductCardVertical({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.imageUrl,
-    this.brand,
-    this.rating,
-    this.reviews,
-    this.sold,
+    required this.product,
     super.key,
   });
 
-  final String id;
-  final String name;
-  final int price;
-  final String imageUrl;
-  final String? brand;
-  final double? rating;
-  final int? reviews;
-  final int? sold;
+  final Product product;
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = (product.images != null && product.images!.isNotEmpty)
+        ? ApiConfig.baseUrl + product.images!.first
+        : 'https://via.placeholder.com/150';
+
     return Container(
       decoration: BoxDecoration(
         color: context.theme.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(12),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -52,17 +45,26 @@ class ProductCardVertical extends StatelessWidget {
               ClipRRect(
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(14)),
-                child: CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  height: context.width * 0.45,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2)),
-                  errorWidget: (_, __, ___) => Container(
-                    color: Colours.grey300,
-                    child:
-                        const Icon(Icons.broken_image, color: Colours.grey600),
+                child: InkWell(
+                  onTap: () {
+                    context.pushNamed(
+                      RouteName.product,
+                      pathParameters: {'slug': product.slug},
+                      extra: product,
+                    );
+                  },
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    height: context.width * 0.45,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    errorWidget: (_, __, ___) => const ColoredBox(
+                      color: Colours.grey300,
+                      child: Icon(Icons.broken_image, color: Colours.grey600),
+                    ),
                   ),
                 ),
               ),
@@ -80,14 +82,17 @@ class ProductCardVertical extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withAlpha(25),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                    child: const Icon(Icons.favorite_border,
-                        size: 18, color: Colours.primary),
+                    child: const Icon(
+                      Icons.favorite_border,
+                      size: 18,
+                      color: Colours.primary,
+                    ),
                   ),
                 ),
               ),
@@ -100,14 +105,14 @@ class ProductCardVertical extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (brand != null && brand!.isNotEmpty)
+                if (product.brand != null && product.brand!.isNotEmpty)
                   Text(
-                    brand!,
+                    product.brand!,
                     style: context.theme.textTheme.labelSmall
                         ?.copyWith(color: Colours.grey600),
                   ),
                 Text(
-                  name,
+                  product.name,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: context.theme.textTheme.bodyMedium?.copyWith(
@@ -116,7 +121,7 @@ class ProductCardVertical extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Rs. ${CoreUtils.currencyFormat(price)}',
+                  'Rs. ${CoreUtils.currencyFormat(product.price)}',
                   style: context.theme.textTheme.titleMedium?.copyWith(
                     color: Colours.primary,
                     fontWeight: FontWeight.bold,
@@ -124,28 +129,32 @@ class ProductCardVertical extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 // Rating & Reviews
-                if (rating != null || reviews != null)
+                if (product.rating != 0.0 || product.reviews != null)
                   Row(
                     children: [
-                      if (rating != null)
-                        const Icon(Icons.star, size: 14, color: Colors.amber),
-                      if (rating != null) const SizedBox(width: 2),
-                      if (rating != null)
+                      if (product.rating != 0.0) ...[
+                        const Icon(
+                          Icons.star,
+                          size: 14,
+                          color: Colors.amber,
+                        ),
+                        const SizedBox(width: 2),
                         Text(
-                          rating!.toStringAsFixed(1),
+                          product.rating.toStringAsFixed(1),
                           style: context.theme.textTheme.labelSmall,
                         ),
-                      if (reviews != null)
+                      ],
+                      if (product.reviews != null)
                         Text(
-                          ' (${reviews!.toCompact})',
+                          ' (${product.reviews!.length.toCompact})',
                           style: context.theme.textTheme.labelSmall
                               ?.copyWith(color: Colours.grey600),
                         ),
                     ],
                   ),
-                if (sold != null)
+                if (product.solds != null)
                   Text(
-                    '${sold!.toCompact} sold',
+                    '${product.solds!.toCompact} sold',
                     style: context.theme.textTheme.labelSmall
                         ?.copyWith(color: Colours.grey600, fontSize: 11),
                   ),
@@ -163,5 +172,4 @@ class ProductCardVertical extends StatelessWidget {
       ),
     );
   }
-
 }

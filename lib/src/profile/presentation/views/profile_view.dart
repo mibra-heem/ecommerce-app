@@ -1,6 +1,4 @@
 import 'package:ecommerce_app/src/profile/presentation/views/parts/profile_app_bar.dart';
-import 'package:ecommerce_app/src/profile/presentation/views/parts/profile_body.dart';
-import 'package:ecommerce_app/src/profile/presentation/views/parts/profile_header.dart';
 import 'package:flutter/material.dart';
 
 class ProfileView extends StatefulWidget {

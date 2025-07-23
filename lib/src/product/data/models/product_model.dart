@@ -4,6 +4,7 @@ class ProductModel extends Product {
   const ProductModel({
     required super.id,
     required super.name,
+    required super.slug,
     required super.price,
     required super.categoryId,
     super.brand,
@@ -23,6 +24,7 @@ class ProductModel extends Product {
     return ProductModel(
       id: data['id'] as String,
       name: data['name'] as String,
+      slug: data['slug'] as String,
       price: data['price'] as int,
       categoryId: data['category_id'] as int,
       brand: data['brand'] as String?,
@@ -49,6 +51,7 @@ class ProductModel extends Product {
   ProductModel copyWith({
     String? id,
     String? name,
+    String? slug,
     int? price,
     int? categoryId,
     String? brand,
@@ -64,6 +67,7 @@ class ProductModel extends Product {
     return ProductModel(
       id: id ?? this.id,
       name: name ?? this.name,
+      slug: slug ?? this.slug,
       price: price ?? this.price,
       categoryId: categoryId ?? this.categoryId,
       brand: brand ?? this.brand,

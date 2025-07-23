@@ -7,11 +7,15 @@ class CartProvider extends ChangeNotifier {
   Map<String, CartItem> get items => _items;
 
   /// Total items count
-  int get totalItems => _items.values.fold(0, (sum, item) => sum + item.quantity);
+  int get totalItems =>
+      _items.values.fold(0, (sum, item) => sum + item.quantity);
 
   /// Total cart price
   double get totalPrice =>
       _items.values.fold(0, (sum, item) => sum + (item.price * item.quantity));
+
+  /// Subtotal (alias of totalPrice for clarity)
+  double get subtotal => totalPrice;
 
   /// Add a product to the cart
   void addToCart(CartItem newItem) {

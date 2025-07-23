@@ -75,7 +75,7 @@ class CoreUtils {
   }
 
   /// Formats price with commas (e.g., 125000 -> 1,25,000)
-  static String currencyFormat(int price) {
+  static String currencyFormat(num price) {
     final priceStr = price.toString();
     final reg = RegExp(r'\B(?=(\d{3})+(?!\d))');
     return priceStr.replaceAllMapped(reg, (match) => ',');

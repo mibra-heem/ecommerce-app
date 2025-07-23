@@ -6,6 +6,7 @@ class Product extends Equatable {
     required this.name,
     required this.price,
     required this.categoryId,
+    required this.slug,
     this.description,
     this.brand,
     this.rating = 0.0,
@@ -21,12 +22,14 @@ class Product extends Equatable {
       : this(
           id: 'product.id',
           name: 'product.name',
+          slug: 'product.slug',
           categoryId: 0,
           price: 0,
         );
 
   final String id;
   final String name;
+  final String slug;
   final int price;
   final int categoryId;
   final double rating;
@@ -43,6 +46,7 @@ class Product extends Equatable {
   List<Object?> get props => [
         id,
         name,
+        slug,
         price,
         categoryId,
         images,

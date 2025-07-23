@@ -223,7 +223,7 @@ class _HomeViewState extends State<HomeView> {
                         child: Container(
                           width: 80,
                           margin: const EdgeInsets.only(right: 12),
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: context.isDarkMode
                                 ? Colours.grey900
@@ -346,20 +346,18 @@ class _HomeViewState extends State<HomeView> {
           crossAxisSpacing: 12,
           childCount: state.products.length,
           itemBuilder: (context, index) {
-            final product = state.products[index];
-            final imageUrl =
-                (product.images != null && product.images!.isNotEmpty)
-                    ? ApiConfig.baseUrl + product.images!.first
-                    : 'https://via.placeholder.com/150';
-            return ProductCardVertical(
-              id: product.id,
-              name: product.name,
-              price: product.price,
-              imageUrl: imageUrl,
+            final products = state.products;
+            final product = (products[index] as ProductModel).copyWith(
+              solds: 1500,
+              reviews: List.filled(160, 'Good, Product.'),
+              rating: 4.5,
               brand: 'Mohart',
-              rating: product.rating,
-              sold: 1500,
-              reviews: 96,
+              colors: ['#FF5733', '#4285F4', '#000000'],
+              sizes: ['Small', 'Medium', 'Large'],
+              materials: ['Leather', 'Paper', 'Wooden', 'Plastic'],
+            );
+            return ProductCardVertical(
+              product: product,
             );
           },
         );
