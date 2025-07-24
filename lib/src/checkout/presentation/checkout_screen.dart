@@ -1,11 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce_app/core/app/resources/colors.dart';
+import 'package:ecommerce_app/core/app/views/loading_view.dart';
 import 'package:ecommerce_app/core/config/api.dart';
 import 'package:ecommerce_app/core/config/route.dart';
+import 'package:ecommerce_app/core/enums/payment_method.dart';
 import 'package:ecommerce_app/core/extensions/context_extension.dart';
 import 'package:ecommerce_app/core/utils/core_utils.dart';
+import 'package:ecommerce_app/core/widgets/my_field.dart';
 import 'package:ecommerce_app/src/address/presentation/provider/address_provider.dart';
 import 'package:ecommerce_app/src/cart/presentation/provider/cart_provider.dart';
+import 'package:ecommerce_app/src/payment/presentation/provider/payment_provider.dart';
+import 'package:ecommerce_app/src/payment/presentation/screens/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -19,14 +24,29 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _isExpanded = false;
+  final _couponController = TextEditingController();
+  final _couponFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _couponController.dispose();
+    _couponFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final cartProvider = context.watch<CartProvider>();
     final addressProvider = context.watch<AddressProvider>();
+    final paymentProvider = context.watch<PaymentProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Checkout")),
+      appBar: AppBar(title: const Text('Checkout')),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -46,11 +66,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       /// CART SUMMARY
                       _buildCartSummary(context, cartProvider),
 
-                      const Spacer(),
                       const SizedBox(height: 20),
 
                       /// ORDER SUMMARY (Subtotal, Shipping, Total)
                       _buildOrderSummary(context, cartProvider),
+
+                      const SizedBox(height: 20),
+
+                      /// Add Coupon CODE
+                      _buildPaymentOptions(context, paymentProvider),
 
                       const SizedBox(height: 20),
                     ],
@@ -61,26 +85,67 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           },
         ),
       ),
-      bottomNavigationBar: Padding(
+      bottomNavigationBar: Container(
         padding: const EdgeInsets.all(16),
-        child: SizedBox(
-          width: double.infinity,
-          height: 50, // or 56 / 60 as needed
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colours.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+        color: context.color.surfaceContainer,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          spacing: 10,
+          children: [
+            _buildSummaryRow(
+              'Total',
+              cartProvider.subtotal + 200,
+              isTotal: true,
             ),
-            onPressed: addressProvider.hasAddress
-                ? () => context.pushNamed(RouteName.payment)
-                : null,
-            child: const Text(
-              'Proceed to Payment',
-              style: TextStyle(fontSize: 16, color: Colors.white),
+            Consumer<PaymentProvider>(
+              builder: (context, provider, _) {
+                return SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colours.primary,
+                      disabledBackgroundColor: context.color.surfaceDim,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: !addressProvider.hasAddress
+                        ? null
+                        : provider.isProcessing
+                            ? null
+                            : () async {
+                                switch (provider.selectedMethod) {
+                                  case PaymentMethods.stripe:
+                                    await provider.makeStripePayment(context,
+                                        amount: cartProvider.subtotal.toInt() +
+                                            200);
+                                  case PaymentMethods.cod:
+                                    await context
+                                        .pushNamed(RouteName.confirmOrder);
+                                  case PaymentMethods.paypal:
+                                    await context
+                                        .pushNamed(RouteName.confirmOrder);
+                                }
+                                _placeOrder(context);
+                              },
+                    child: provider.isProcessing
+                        ? const LoadingView()
+                        : const Center(
+                            child: Text(
+                              'Place Order',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                  ),
+                );
+              },
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -90,14 +155,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget _buildAddressSection(BuildContext context, AddressProvider provider) {
     debugPrint('${provider.addresses}');
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (provider.hasAddress) {
           // Navigate to AddressSelectionScreen
-          context.pushNamed(RouteName.address);
+          await context.pushNamed(RouteName.address);
+          debugPrint('back at checkout screen');
         } else {
           // Navigate to AddAddressScreen
-          context.pushNamed(RouteName.addressCreate);
+          await context.pushNamed(RouteName.addressCreate);
         }
+        _couponFocusNode.unfocus();
       },
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -172,6 +239,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
               if (cartItems.length > 2)
                 TextButton.icon(
+                  style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact),
                   onPressed: () {
                     setState(() {
                       _isExpanded = !_isExpanded;
@@ -198,7 +269,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       width: 50,
                       height: 50,
                       placeholder: (_, __) => const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2)),
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
                       errorWidget: (_, __, ___) =>
                           const Icon(Icons.broken_image),
                     ),
@@ -231,7 +303,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget _buildOrderSummary(BuildContext context, CartProvider cartProvider) {
     final subtotal = cartProvider.subtotal;
     const shipping = 200; // Example fixed shipping cost
-    final total = subtotal + shipping;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -252,8 +323,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           _buildSummaryRow('Subtotal', subtotal),
           const SizedBox(height: 8),
           _buildSummaryRow('Shipping', shipping),
-          const Divider(height: 16, thickness: 1),
-          _buildSummaryRow('Total', total, isTotal: true),
+          const Divider(height: 20, thickness: 1),
+
+          _buildCouponCode(),
+          // _buildSummaryRow('Total', total, isTotal: true),
         ],
       ),
     );
@@ -261,7 +334,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Widget _buildSummaryRow(String label, num price, {bool isTotal = false}) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: isTotal
+          ? MainAxisAlignment.spaceBetween
+          : MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
@@ -270,15 +345,75 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             fontSize: isTotal ? 16 : 14,
           ),
         ),
+        if (isTotal)
+          const SizedBox(
+            width: 15,
+          ),
         Text(
           'Rs. ${CoreUtils.currencyFormat(price)}',
           style: TextStyle(
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: isTotal ? Colours.primary : Colours.grey800,
+            color: isTotal ? Colours.primary : Colours.grey500,
             fontSize: isTotal ? 16 : 14,
           ),
         ),
       ],
     );
+  }
+
+  /// Coupon Code
+  Widget _buildCouponCode() {
+    return Container(
+      // padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.isDarkMode ? Colours.grey900 : Colours.grey100,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: MyField(
+              controller: _couponController,
+              hintText: 'Enter Coupon Code',
+              fillColor: context.color.surfaceDim,
+              focusNode: _couponFocusNode,
+            ),
+          ),
+          const SizedBox(width: 10),
+          TextButton(
+            onPressed: () {
+              // apply Coupon code logic
+            },
+            child: const Text(
+              'Apply',
+              style: TextStyle(color: Colours.primary),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  /// Select Payment Options
+  Widget _buildPaymentOptions(BuildContext context, PaymentProvider provider) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: context.isDarkMode ? Colours.grey900 : Colours.grey100,
+      ),
+      child: const PaymentMethodSelector(),
+    );
+  }
+
+  void _placeOrder(BuildContext context) {
+    // TODO: Call API or handle order placement logic here.
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Order placed successfully!')),
+    );
+
+    // Clear cart after placing the order
+    context.read<CartProvider>().clearCart();
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }

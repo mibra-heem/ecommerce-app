@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class MyField extends StatelessWidget {
   const MyField({
     required this.controller,
+    this.focusNode,
     this.matchField = '',
     this.validator,
     this.filled = true,
@@ -29,6 +30,7 @@ class MyField extends StatelessWidget {
   });
 
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final String matchField;
   final String? Function(String?)? validator;
   final bool filled;
@@ -57,6 +59,7 @@ class MyField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      focusNode: focusNode,
       validator: overrideValidator ? validator : (value){
         if(value == null || value == ''){
           return 'This field is required.';
@@ -79,11 +82,18 @@ class MyField extends StatelessWidget {
         filled: filled,
         fillColor: fillColor,
         counterText: isTextArea ? counterText : null,
-        // enabledBorder: !enabled ? OutlineInputBorder(
-        //   borderRadius:  BorderRadius.circular(30),
-        //   // borderSide: const BorderSide(
-        //   //   color: Colours.white,),
-        // ) : null,
+        enabledBorder: OutlineInputBorder(
+          borderRadius:  BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius:  BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        border: OutlineInputBorder(
+          borderRadius:  BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20, vertical: 12,
         ),

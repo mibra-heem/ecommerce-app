@@ -5,16 +5,17 @@ class AppColorScheme {
   const AppColorScheme._();
 
   static const light = ColorScheme.light(
-      primary: Colours.primary,
-      onPrimary: Colours.grey100,
-      primaryContainer: Colours.primary,
-      secondary: Colours.grey900,
-      onSecondary: Colours.grey100,
-      tertiary: Colours.grey800,
-      onTertiary: Colours.grey200,
-      surface: Colours.scaffoldLight,
-      surfaceContainer: Colours.white,
-    );
+    primary: Colours.primary,
+    onPrimary: Colours.grey100,
+    primaryContainer: Colours.primary,
+    secondary: Colours.grey900,
+    onSecondary: Colours.grey100,
+    tertiary: Colours.grey800,
+    onTertiary: Colours.grey200,
+    surface: Colours.scaffoldLight,
+    surfaceContainer: Colours.white,
+    surfaceDim: Color(0xFFF7F7F7),
+  );
 
   static const dark = ColorScheme.dark(
     primary: Colours.primary,
@@ -26,5 +27,6 @@ class AppColorScheme {
     onTertiary: Colours.grey800,
     onSurface: Colours.grey100,
     surfaceContainer: Colours.grey900,
+    surfaceDim: Color(0xFF181818),
   );
 }

@@ -61,7 +61,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RoutePath.checkout,
       name: RouteName.checkout,
-      builder: (context, state) => const CheckoutScreen(),
+      builder: (context, state) => ChangeNotifierProvider.value(
+        value: sl<PaymentProvider>(),
+        child: const CheckoutScreen(),
+      ),
     ),
     GoRoute(
       path: RoutePath.address,
@@ -82,22 +85,12 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: RoutePath.payment,
-      name: RouteName.payment,
-      builder: (context, state) {
-        return ChangeNotifierProvider.value(
-          value: sl<PaymentProvider>(),
-          child: const PaymentScreen(),
-        );
-      },
-    ),
-    GoRoute(
       path: RoutePath.confirmOrder,
       name: RouteName.confirmOrder,
       builder: (context, state) {
         return ChangeNotifierProvider.value(
           value: sl<PaymentProvider>(),
-          child: const OrderConfirmationScreen(),
+          child: const OrderSuccessScreen(orderId: '4389321',),
         );
       },
     ),

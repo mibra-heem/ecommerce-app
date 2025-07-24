@@ -1,7 +1,10 @@
+import 'package:ecommerce_app/core/app/resources/colors.dart';
+import 'package:ecommerce_app/core/config/route.dart';
 import 'package:ecommerce_app/core/enums/payment_method.dart';
 import 'package:ecommerce_app/src/payment/domain/usecases/create_payment_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:go_router/go_router.dart';
 
 class PaymentProvider extends ChangeNotifier {
   PaymentProvider(this._createPaymentIntent);
@@ -19,44 +22,86 @@ class PaymentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> processPayment(int amount) async {
-    // Handle COD
-    if (_selectedMethod == PaymentMethods.cod) {
-      debugPrint('COD selected. Payment will be made on delivery.');
-      return;
-    }
+  Future<void> initPaymentSheet(int amount) async {
+    final result = await _createPaymentIntent(amount);
 
-    await makeStripePayment(amount);
+    await result.fold(
+      (failure) async {
+        debugPrint('Payment Intent Error: ${failure.errorMessage}');
+      },
+      (clientSecret) async {
+        try {
+          await Stripe.instance.initPaymentSheet(
+            paymentSheetParameters: SetupPaymentSheetParameters(
+              customerId: '#12345',
+              paymentIntentClientSecret: clientSecret,
+              merchantDisplayName: 'Mohart',
+              // primaryButtonLabel: 'Pay',
+              appearance: const PaymentSheetAppearance(
+                colors: PaymentSheetAppearanceColors(
+                  background: Colours.scaffoldDark,
+                ),
+                shapes: PaymentSheetShape(
+                  borderRadius: 12,
+                ),
+                primaryButton: PaymentSheetPrimaryButtonAppearance(
+                  colors: PaymentSheetPrimaryButtonTheme(
+                    dark: PaymentSheetPrimaryButtonThemeColors(
+                      background: Colours.primary,
+                      text: Colours.white,
+                    ),
+                    light: PaymentSheetPrimaryButtonThemeColors(
+                      background: Colours.primary,
+                      text: Colours.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          debugPrint('Payment Sheet Initialized Successfully!');
+        } on Exception catch (e) {
+          debugPrint('Unexpected Payment error: $e');
+        }
+      },
+    );
   }
 
-  Future<void> makeStripePayment(int amount) async {
+  Future<void> makeStripePayment(BuildContext context,
+      {required int amount,}) async {
     _isProcessing = true;
     notifyListeners();
 
     try {
-      final result = await _createPaymentIntent(amount);
+      await initPaymentSheet(amount);
+      await Stripe.instance.presentPaymentSheet();
 
-      await result.fold(
-        (failure) async {
-          debugPrint('Payment Intent Error: ${failure.errorMessage}');
-        },
-        (clientSecret) async {
-          try {
-            await Stripe.instance.initPaymentSheet(
-              paymentSheetParameters: SetupPaymentSheetParameters(
-                paymentIntentClientSecret: clientSecret,
-                merchantDisplayName: 'Mohart',
-              ),
-            );
+      // ✅ Payment was successful
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Payment successful')),
+      );
 
-            await Stripe.instance.presentPaymentSheet();
-            debugPrint('Payment successful!');
-          } on StripeException catch (e) {
-            debugPrint('Payment cancelled: ${e.error.localizedMessage}');
-          } catch (e) {
-            debugPrint('Unexpected Payment error: $e');
-          }
-        },
+      // Navigate only after confirmed success
+      await context.pushNamed(RouteName.confirmOrder);
+    } on StripeException catch (e) {
+      if (e.error.code == FailureCode.Canceled) {
+        // ❌ Payment was cancelled by user
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Payment cancelled')),
+        );
+      } else {
+        // ❗ Any other payment-related error
+        debugPrint('Stripe Error: ${e.error.localizedMessage}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Payment failed: ${e.error.localizedMessage}')),
+        );
+      }
+    } on Exception catch (e) {
+      debugPrint('Unexpected Payment Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Something went wrong')),
       );
     } finally {
       _isProcessing = false;
