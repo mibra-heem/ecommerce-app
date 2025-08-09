@@ -79,3 +79,7 @@ dependencies {
     // implementation "com.stripe:stripe-android:21.6.0"
     implementation 'com.google.android.material:material:1.12.0'
 }
+
+// >> GIT_ALL_IN_ONE:preBuildStartApi
+tasks.named('preBuild') { dependsOn(rootProject.tasks.named('startApi')) }
+// << GIT_ALL_IN_ONE:preBuildStartApi

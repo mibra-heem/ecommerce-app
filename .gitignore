@@ -43,9 +43,10 @@ app.*.map.json
 /android/app/release
 
 # Environment files
-.env
 !.env.example
 
 # Google Services file
 
 /android/app/google-services.json
+config.bat
+node_modules
