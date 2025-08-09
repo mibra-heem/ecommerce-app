@@ -89,20 +89,21 @@ class CartScreen extends StatelessWidget {
                                   item.name,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: context.theme.textTheme.titleMedium,
+                                  style: context.text.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                                 if (item.color != null || item.size != null)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 4),
                                     child: Text(
-                                      '${item.color ?? ''} ${item.size != null ? ' | ${item.size}' : ''}',
-                                      style: context.theme.textTheme.labelSmall
-                                          ?.copyWith(color: Colours.grey600),
+                                      'Black${item.size != null ? ' | ${item.size}' : ''}',
+                                      style: context.text.labelSmall,
                                     ),
                                   ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Rs. ${item.price}',
+                                  '\$${item.price}',
                                   style: context.theme.textTheme.titleSmall
                                       ?.copyWith(
                                     color: Colours.primary,
@@ -182,7 +183,7 @@ class CartScreen extends StatelessWidget {
                             style: TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 16)),
                         Text(
-                          'Rs. ${cart.totalPrice.toStringAsFixed(0)}',
+                          '\$${cart.totalPrice.toStringAsFixed(0)}',
                           style: const TextStyle(
                               color: Colours.primary,
                               fontWeight: FontWeight.bold,

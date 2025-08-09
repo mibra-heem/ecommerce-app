@@ -1,6 +1,7 @@
 import 'package:ecommerce_app/core/app/resources/colors.dart';
 import 'package:ecommerce_app/core/config/route.dart';
 import 'package:ecommerce_app/core/enums/payment_method.dart';
+import 'package:ecommerce_app/core/extensions/context_extension.dart';
 import 'package:ecommerce_app/src/payment/domain/usecases/create_payment_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -22,7 +23,8 @@ class PaymentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> initPaymentSheet(int amount) async {
+  Future<void> initPaymentSheet(BuildContext context,
+      {required int amount}) async {
     final result = await _createPaymentIntent(amount);
 
     await result.fold(
@@ -36,27 +38,26 @@ class PaymentProvider extends ChangeNotifier {
               customerId: '#12345',
               paymentIntentClientSecret: clientSecret,
               merchantDisplayName: 'Mohart',
-              // primaryButtonLabel: 'Pay',
-              appearance: const PaymentSheetAppearance(
-                colors: PaymentSheetAppearanceColors(
-                  background: Colours.scaffoldDark,
-                ),
-                shapes: PaymentSheetShape(
-                  borderRadius: 12,
-                ),
-                primaryButton: PaymentSheetPrimaryButtonAppearance(
-                  colors: PaymentSheetPrimaryButtonTheme(
-                    dark: PaymentSheetPrimaryButtonThemeColors(
-                      background: Colours.primary,
-                      text: Colours.white,
-                    ),
-                    light: PaymentSheetPrimaryButtonThemeColors(
-                      background: Colours.primary,
-                      text: Colours.white,
-                    ),
-                  ),
-                ),
-              ),
+              // appearance: PaymentSheetAppearance(
+              //   colors: PaymentSheetAppearanceColors(
+              //     background: context.color.surface,
+              //   ),
+              //   shapes: const PaymentSheetShape(
+              //     borderRadius: 12,
+              //   ),
+              //   primaryButton: const PaymentSheetPrimaryButtonAppearance(
+              //     colors: PaymentSheetPrimaryButtonTheme(
+              //       dark: PaymentSheetPrimaryButtonThemeColors(
+              //         background: Colours.primary,
+              //         text: Colours.white,
+              //       ),
+              //       light: PaymentSheetPrimaryButtonThemeColors(
+              //         background: Colours.primary,
+              //         text: Colours.white,
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ),
           );
 
@@ -68,13 +69,15 @@ class PaymentProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> makeStripePayment(BuildContext context,
-      {required int amount,}) async {
+  Future<void> makeStripePayment(
+    BuildContext context, {
+    required int amount,
+  }) async {
     _isProcessing = true;
     notifyListeners();
 
     try {
-      await initPaymentSheet(amount);
+      await initPaymentSheet(context, amount: amount);
       await Stripe.instance.presentPaymentSheet();
 
       // ✅ Payment was successful
@@ -83,7 +86,7 @@ class PaymentProvider extends ChangeNotifier {
       );
 
       // Navigate only after confirmed success
-      await context.pushNamed(RouteName.confirmOrder);
+      await context.pushNamed(RouteName.orderPlaced);
     } on StripeException catch (e) {
       if (e.error.code == FailureCode.Canceled) {
         // ❌ Payment was cancelled by user

@@ -31,6 +31,7 @@ class AddressScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final address = addressProvider.addresses[index];
                 return Card(
+                  color: context.color.surfaceContainer,
                   margin: const EdgeInsets.only(bottom: 12),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
@@ -75,7 +76,7 @@ class AddressScreen extends StatelessWidget {
                       onSelected: (val) {
                         if (val == 'edit') {
                           context.pushNamed(
-                            RouteName.addressEdit, 
+                            RouteName.addressEdit,
                             pathParameters: {'id': address.id},
                             extra: address,
                           );

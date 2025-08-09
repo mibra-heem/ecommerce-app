@@ -81,7 +81,7 @@ class ProductCardVertical extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: context.theme.colorScheme.surface,
+                      color: context.color.surface.withAlpha(225),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
@@ -119,8 +119,7 @@ class ProductCardVertical extends StatelessWidget {
                 if (product.brand != null && product.brand!.isNotEmpty)
                   Text(
                     product.brand!,
-                    style: context.theme.textTheme.labelSmall
-                        ?.copyWith(color: Colours.grey600),
+                    style: context.theme.textTheme.labelSmall,
                   ),
                 Text(
                   product.name,
@@ -132,7 +131,7 @@ class ProductCardVertical extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Rs. ${CoreUtils.currencyFormat(product.price)}',
+                  '\$${CoreUtils.currencyFormat(product.price)}',
                   style: context.theme.textTheme.titleMedium?.copyWith(
                     color: Colours.primary,
                     fontWeight: FontWeight.bold,

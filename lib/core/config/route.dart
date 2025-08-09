@@ -1,5 +1,4 @@
-class RoutePath{
-
+class RoutePath {
   const RoutePath._();
 
   static const initial = '/';
@@ -10,20 +9,20 @@ class RoutePath{
   static const cart = '/cart';
   static const cartView = '/cart-view';
   static const profile = '/profile';
-  static const checkout= '/checkout';
+  static const checkout = '/checkout';
   static const address = '/address';
   static const addressCreate = '/address/create';
   static const addressEdit = '/address/:id/edit';
-  static const payment= '/payment';
-  static const message= '/message';
-  static const confirmOrder= '/confirm-order';
-
+  static const payment = '/payment';
+  static const message = '/message';
+  static const setting = '/setting';
+  static const orderPlaced = '/order-placed';
+  static const viewOrderReceipt = '/view-order-receipt';
 
   // static String getProduct(String id) => '$product/$id';
 }
 
-class RouteName{
-
+class RouteName {
   const RouteName._();
 
   static const initial = 'initial';
@@ -34,12 +33,13 @@ class RouteName{
   static const cart = 'cart';
   static const cartView = 'cart-view';
   static const profile = 'profile';
-  static const checkout= 'checkout';
+  static const checkout = 'checkout';
   static const address = 'address';
   static const addressCreate = 'address-create';
   static const addressEdit = 'address-edit';
   static const payment = 'payment';
-  static const message= 'message';
-  static const confirmOrder = 'confirm-order';
-
+  static const message = 'message';
+  static const setting = 'setting';
+  static const orderPlaced = 'order-placed';
+  static const viewOrderReceipt = 'view-order-receipt';
 }

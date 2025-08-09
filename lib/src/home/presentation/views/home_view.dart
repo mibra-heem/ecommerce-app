@@ -18,6 +18,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconly/iconly.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -56,20 +57,28 @@ class _HomeViewState extends State<HomeView> {
       appBar: _buildAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: _buildBannerSlider()),
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
-            SliverToBoxAdapter(child: _buildCategorySection()),
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
-            SliverToBoxAdapter(child: _buildSectionTitle('Featured')),
-            const SliverToBoxAdapter(child: SizedBox(height: 12)),
-            SliverToBoxAdapter(child: _buildFeaturedProducts()),
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
-            SliverToBoxAdapter(child: _buildSectionTitle('New Arrivals')),
-            const SliverToBoxAdapter(child: SizedBox(height: 12)),
-            _buildStaggeredProducts(),
-          ],
+        child: RefreshIndicator(
+          onRefresh: () async {
+            context.read<HomeBloc>()
+              ..add(const GetBannersEvent())
+              ..add(const GetCategoriesEvent())
+              ..add(const GetProductsEvent());
+          },
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: _buildBannerSlider()),
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              SliverToBoxAdapter(child: _buildCategorySection()),
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              SliverToBoxAdapter(child: _buildSectionTitle('Featured')),
+              const SliverToBoxAdapter(child: SizedBox(height: 12)),
+              SliverToBoxAdapter(child: _buildFeaturedProducts()),
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              SliverToBoxAdapter(child: _buildSectionTitle('New Arrivals')),
+              const SliverToBoxAdapter(child: SizedBox(height: 12)),
+              _buildStaggeredProducts(),
+            ],
+          ),
         ),
       ),
     );
@@ -78,10 +87,11 @@ class _HomeViewState extends State<HomeView> {
   AppBar _buildAppBar() {
     return AppBar(
       title: Text(
-        'Mohart',
+        'MOHART',
         style: context.theme.textTheme.titleLarge?.copyWith(
+          color: Colours.white,
           fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
+          letterSpacing: 2,
         ),
       ),
       actions: [
@@ -110,12 +120,12 @@ class _HomeViewState extends State<HomeView> {
               ),
               onTap: () => context.pushNamed(RouteName.favourite),
             ),
-            const PopupMenuItem<void>(
-              child: PopupItem(
+            PopupMenuItem<void>(
+              child: const PopupItem(
                 title: 'Settings',
                 icon: IconlyLight.setting,
               ),
-              // onTap: () => ,
+              onTap: () => context.pushNamed(RouteName.setting),
             ),
           ],
         ),
@@ -161,10 +171,24 @@ class _HomeViewState extends State<HomeView> {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (_, state) {
         if (state.isLoadingBanners) {
-          return const LoadingView();
+          // Return shimmer placeholder
+          return Shimmer.fromColors(
+            baseColor: Colors.grey.shade400,
+            highlightColor: Colors.grey.shade500,
+            // direction: ShimmerDirection.ttb,
+            child: Container(
+              height: context.height * 0.18,
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade900,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
         } else if (state.banners.isEmpty) {
           return const NotFoundText('No Products');
         }
+
         return CarouselSlider(
           options: CarouselOptions(
             height: context.height * 0.18,

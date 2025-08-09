@@ -33,13 +33,19 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   void initState() {
     super.initState();
     final address = widget.existingAddress;
-    _recipientController = TextEditingController(text: address?.recipientName ?? '');
-    _phoneController = TextEditingController(text: address?.phone ?? '');
-    _streetController = TextEditingController(text: address?.street ?? '');
+    _recipientController = TextEditingController(
+        text: address?.recipientName ?? '');
+    _phoneController =
+        TextEditingController(text: address?.phone ?? '');
+    _streetController = TextEditingController(
+        text: address?.street ??
+            '');
     _cityController = TextEditingController(text: address?.city ?? '');
     _stateController = TextEditingController(text: address?.state ?? '');
-    _postalController = TextEditingController(text: address?.postalCode ?? '');
-    _countryController = TextEditingController(text: address?.country ?? '');
+    _postalController =
+        TextEditingController(text: address?.postalCode ?? '');
+    _countryController =
+        TextEditingController(text: address?.country ?? '');
     _isDefault = address?.isDefault ?? false;
     _addressType = address?.name ?? 'Home'; // Default to Home
   }
@@ -187,9 +193,9 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                 child: Text(
                   isEdit ? 'Update Address' : 'Save Address',
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colours.white),
                 ),
               ),
             ],
@@ -212,8 +218,14 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none),
         filled: true,
-        fillColor: context.isDarkMode ? Colours.grey900 : Colours.white,
+        fillColor: context.color.surfaceContainer,
       ),
     );
   }

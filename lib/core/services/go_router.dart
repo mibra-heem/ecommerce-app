@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:ecommerce_app/core/config/route.dart';
 import 'package:ecommerce_app/core/services/dependency_injection.dart';
 import 'package:ecommerce_app/src/address/domain/entities/address.dart';
@@ -10,10 +12,11 @@ import 'package:ecommerce_app/src/favourite/presentation/screens/favourite_scree
 import 'package:ecommerce_app/src/home/presentation/bloc/home_bloc.dart';
 import 'package:ecommerce_app/src/home/presentation/views/home_view.dart';
 import 'package:ecommerce_app/src/order/presentation/screens/order_screen.dart';
+import 'package:ecommerce_app/src/order/presentation/screens/view_order_receipt.dart';
 import 'package:ecommerce_app/src/payment/presentation/provider/payment_provider.dart';
-import 'package:ecommerce_app/src/payment/presentation/screens/payment_screen.dart';
 import 'package:ecommerce_app/src/product/domain/entities/product.dart';
 import 'package:ecommerce_app/src/product/presentation/screens/product_detail_screen.dart';
+import 'package:ecommerce_app/src/setting/presentation/screens/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -85,13 +88,31 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: RoutePath.confirmOrder,
-      name: RouteName.confirmOrder,
+      path: RoutePath.orderPlaced,
+      name: RouteName.orderPlaced,
       builder: (context, state) {
         return ChangeNotifierProvider.value(
           value: sl<PaymentProvider>(),
-          child: const OrderSuccessScreen(orderId: '4389321',),
+          child: const OrderSuccessScreen(),
+          // child: const OrderSuccessScreen(orderId: '4389321',),
         );
+      },
+    ),
+    GoRoute(
+      path: RoutePath.viewOrderReceipt,
+      name: RouteName.viewOrderReceipt,
+      builder: (context, state) {
+        final pdfBytes = state.extra! as Uint8List;
+        return ViewOrderReceipt(
+          pdfBytes: pdfBytes,
+        );
+      },
+    ),
+    GoRoute(
+      path: RoutePath.setting,
+      name: RouteName.setting,
+      builder: (context, state) {
+        return const SettingsScreen();
       },
     ),
     StatefulShellRoute.indexedStack(

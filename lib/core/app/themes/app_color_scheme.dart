@@ -14,7 +14,8 @@ class AppColorScheme {
     onTertiary: Colours.grey200,
     surface: Colours.scaffoldLight,
     surfaceContainer: Colours.white,
-    surfaceDim: Color(0xFFF7F7F7),
+    surfaceDim: Color(0xFFDADADA),
+    
   );
 
   static const dark = ColorScheme.dark(
@@ -27,6 +28,6 @@ class AppColorScheme {
     onTertiary: Colours.grey800,
     onSurface: Colours.grey100,
     surfaceContainer: Colours.grey900,
-    surfaceDim: Color(0xFF181818),
+    surfaceDim: Color(0xFF1E1E1E),
   );
 }

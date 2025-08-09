@@ -1,3 +1,4 @@
+import 'package:ecommerce_app/core/extensions/context_extension.dart';
 import 'package:flutter/material.dart';
 
 class MyField extends StatelessWidget {
@@ -69,6 +70,7 @@ class MyField extends StatelessWidget {
       onTapOutside: isFocusOnTapOutside 
         ? (_) => FocusScope.of(context).unfocus() 
         : null,
+      style: context.text.bodyLarge,
       obscureText: obscureText,
       readOnly: readOnly,
       keyboardType: keyboardType,

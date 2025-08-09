@@ -12,7 +12,10 @@ import 'package:ecommerce_app/src/cart/presentation/provider/cart_provider.dart'
 import 'package:ecommerce_app/src/payment/presentation/provider/payment_provider.dart';
 import 'package:ecommerce_app/src/payment/presentation/screens/payment_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconly/iconly.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -106,7 +109,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colours.primary,
-                      disabledBackgroundColor: context.color.surfaceDim,
+                      disabledBackgroundColor: Colours.disable,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -118,15 +121,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             : () async {
                                 switch (provider.selectedMethod) {
                                   case PaymentMethods.stripe:
-                                    await provider.makeStripePayment(context,
-                                        amount: cartProvider.subtotal.toInt() +
-                                            200);
+                                    await provider.makeStripePayment(
+                                      context,
+                                      amount:
+                                          (cartProvider.subtotal.toInt() + 10) *
+                                              100,
+                                    );
                                   case PaymentMethods.cod:
                                     await context
-                                        .pushNamed(RouteName.confirmOrder);
+                                        .pushNamed(RouteName.orderPlaced);
                                   case PaymentMethods.paypal:
                                     await context
-                                        .pushNamed(RouteName.confirmOrder);
+                                        .pushNamed(RouteName.orderPlaced);
                                 }
                                 _placeOrder(context);
                               },
@@ -138,6 +144,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
+                                color: Colours.white,
                               ),
                             ),
                           ),
@@ -170,7 +177,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: context.isDarkMode ? Colours.grey900 : Colours.grey100,
+          color: context.color.surfaceContainer,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,7 +230,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: context.isDarkMode ? Colours.grey900 : Colours.grey100,
+        color: context.color.surfaceContainer,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,10 +238,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Cart Summary',
-                style: context.theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+              const Icon(
+                IconlyBold.bag,
+                color: Colours.primary,
+              ),
+              const SizedBox(width: 5),
+              Expanded(
+                child: Text(
+                  'Cart Summary',
+                  style: context.theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               if (cartItems.length > 2)
@@ -302,22 +316,31 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   /// Order Summary (Subtotal, Shipping, Total)
   Widget _buildOrderSummary(BuildContext context, CartProvider cartProvider) {
     final subtotal = cartProvider.subtotal;
-    const shipping = 200; // Example fixed shipping cost
+    const shipping = 10; // Example fixed shipping cost
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: context.isDarkMode ? Colours.grey900 : Colours.grey100,
+        color: context.color.surfaceContainer,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Order Summary',
-            style: context.theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            spacing: 5,
+            children: [
+              const Icon(
+                Icons.receipt_long,
+                color: Colours.primary,
+              ),
+              Text(
+                'Order Summary',
+                style: context.theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
           _buildSummaryRow('Subtotal', subtotal),
@@ -350,7 +373,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             width: 15,
           ),
         Text(
-          'Rs. ${CoreUtils.currencyFormat(price)}',
+          '\$${CoreUtils.currencyFormat(price)}',
           style: TextStyle(
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
             color: isTotal ? Colours.primary : Colours.grey500,
@@ -366,7 +389,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Container(
       // padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: context.isDarkMode ? Colours.grey900 : Colours.grey100,
+        // color: context.color.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -375,7 +398,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             child: MyField(
               controller: _couponController,
               hintText: 'Enter Coupon Code',
-              fillColor: context.color.surfaceDim,
+              fillColor: context.color.surface,
               focusNode: _couponFocusNode,
             ),
           ),
@@ -400,7 +423,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: context.isDarkMode ? Colours.grey900 : Colours.grey100,
+        color: context.color.surfaceContainer,
       ),
       child: const PaymentMethodSelector(),
     );
@@ -408,6 +431,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   void _placeOrder(BuildContext context) {
     // TODO: Call API or handle order placement logic here.
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Order placed successfully!')),
     );
@@ -415,5 +439,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     // Clear cart after placing the order
     context.read<CartProvider>().clearCart();
     Navigator.of(context).popUntil((route) => route.isFirst);
+
+    debugPrint('Order Placed & Cart is Empty. . . . . . . . . . .');
   }
 }

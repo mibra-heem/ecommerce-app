@@ -39,8 +39,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       appBar: AppBar(
         title: Text(
           product.name,
-          style: context.theme.textTheme.titleMedium
-              ?.copyWith(fontWeight: FontWeight.bold),
+          style: context.text.titleMedium
+              ?.copyWith(color: Colours.white),
         ),
         centerTitle: true,
         actionsPadding: const EdgeInsets.only(right: 8),
@@ -52,7 +52,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 isLabelVisible: cart.totalItems > 0,
                 offset: const Offset(-4, 4),
                 child: IconButton(
-                  icon: const Icon(Icons.shopping_cart, size: 24,),
+                  icon: const Icon(IconlyBold.buy, size: 24,),
                   onPressed: () {
                     context.pushNamed(RouteName.cart);
                   },
@@ -86,16 +86,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   // Name
                   Text(
                     product.name,
-                    style: context.theme.textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style: context.theme.textTheme.titleLarge,
                   ),
 
                   const SizedBox(height: 8),
 
                   // Price
                   Text(
-                    'Rs. ${CoreUtils.currencyFormat(product.price)}',
-                    style: context.theme.textTheme.headlineSmall
+                    '\$${CoreUtils.currencyFormat(product.price)}',
+                    style: context.theme.textTheme.titleLarge
                         ?.copyWith(color: Colours.primary),
                   ),
 

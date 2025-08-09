@@ -83,7 +83,7 @@ class ProductCardHorizontal extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: context.theme.colorScheme.surface,
+                      color: context.color.surface.withAlpha(225),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
@@ -130,7 +130,6 @@ class ProductCardHorizontal extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: context.theme.textTheme.labelSmall?.copyWith(
-                            color: Colours.grey600,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -144,7 +143,7 @@ class ProductCardHorizontal extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Rs. ${CoreUtils.currencyFormat(product.price)}',
+                        '\$${CoreUtils.currencyFormat(product.price)}',
                         style: context.theme.textTheme.titleMedium?.copyWith(
                           color: Colours.primary,
                           fontWeight: FontWeight.bold,
@@ -169,18 +168,13 @@ class ProductCardHorizontal extends StatelessWidget {
                             if (product.reviews != null)
                               Text(
                                 ' (${product.reviews!.length.toCompact})',
-                                style: context.theme.textTheme.labelSmall
-                                    ?.copyWith(color: Colours.grey600),
+                                style: context.theme.textTheme.labelSmall,
                               ),
                             if (product.solds != null) ...[
                               const Spacer(),
                               Text(
                                 '${product.solds!.toCompact} sold',
-                                style: context.theme.textTheme.labelSmall
-                                    ?.copyWith(
-                                  color: Colours.grey600,
-                                  fontSize: 11,
-                                ),
+                                style: context.theme.textTheme.labelSmall,
                               ),
                             ],
                           ],

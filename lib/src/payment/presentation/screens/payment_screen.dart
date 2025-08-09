@@ -4,6 +4,7 @@ import 'package:ecommerce_app/core/extensions/context_extension.dart';
 import 'package:ecommerce_app/src/payment/presentation/provider/payment_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 class PaymentMethodSelector extends StatelessWidget {
@@ -17,11 +18,20 @@ class PaymentMethodSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Payment Method',
-          style: context.theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          spacing: 5,
+          children: [
+            const Icon(
+              Icons.payment,
+              color: Colours.primary,
+            ),
+            Text(
+              'Payment Method',
+              style: context.theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
         const SizedBox(
           height: 20,
@@ -35,7 +45,7 @@ class PaymentMethodSelector extends StatelessWidget {
         const SizedBox(height: 15),
         _buildOption(
           context,
-          title: 'Credit / Debit Card (Stripe)',
+          title: 'Stripe (Debit/Credit card)',
           value: PaymentMethods.stripe,
           selected: selected,
         ),
@@ -54,14 +64,14 @@ class PaymentMethodSelector extends StatelessWidget {
       // borderRadius: BorderRadius.circular(12),
       child: Row(
         children: [
-          Icon(
-            value == PaymentMethods.cod
-                ? Icons.money_rounded
-                : FontAwesomeIcons.stripe,
-            color: Colours.primary,
-            size: 22,
-          ),
-          const SizedBox(width: 12),
+          // Icon(
+          //   value == PaymentMethods.cod
+          //       ? Icons.money_rounded
+          //       : FontAwesomeIcons.stripe,
+          //   color: Colours.primary,
+          //   size: 22,
+          // ),
+          // const SizedBox(width: 12),
           Expanded(
             child: Text(
               title,

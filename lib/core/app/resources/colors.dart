@@ -36,7 +36,7 @@ class Colours {
   static const grey200 = Color(0xFFEEEEEE);
   static const grey300 = Color(0xFFE0E0E0);
   static const grey400 = Color(0xFFBDBDBD);
-  static const grey500 = Color(0xFF9E9E9E);
+  static const grey500 = grey;
   static const grey600 = Color(0xFF757575);
   static const grey700 = Color(0xFF616161);
   static const grey800 = Color(0xFF424242);
@@ -63,5 +63,5 @@ class Colours {
   static const info = blue;
   static const warning = yellow;
   static const danger = red;
-  static const disable = grey;
+  static const disable = grey600;
 }
