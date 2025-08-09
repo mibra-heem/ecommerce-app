@@ -3,7 +3,7 @@
 <h2> Video Demo </h2>
 
 <p align="left">
-  <img src="https://github.com/mibra-heem/ecommerce-app/blob/main/assets/gif/mohart-demo.gif" width="382" />
+  <img src="https://github.com/mibra-heem/ecommerce-app/blob/main/assets/gif/mohart-demo.gif" width="250" />
 </p>
 
 ## About Mohart
@@ -39,4 +39,5 @@ A modern, full-featured e-commerce application built using **Flutter (frontend)*
 | API's                | REST       |
 
 ---
+
 
